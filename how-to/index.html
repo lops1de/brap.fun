@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <script type="text/javascript" src="server.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modpack Guide</title>
+    <!-- Tailwind CSS CDN for Shadcn-inspired styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+    /* Grim-Dark Fantasy RPG Theme */
+    :root {
+        --background: #1a1a1a; /* Deep charcoal, like a dungeon's shadow */
+        --foreground: #d9c8a9; /* Aged parchment, weathered text */
+        --card: #2b2b2b; /* Worn stone or rusted metal */
+        --card-foreground: #d9c8a9;
+        --primary: #8b0000; /* Blood red, a warrior’s resolve */
+        --primary-foreground: #f5e6cc; /* Off-white for contrast */
+        --secondary: #3c2f2f; /* Darkened leather or old bloodstains */
+        --secondary-foreground: #d9c8a9;
+        --accent: #d4a017; /* Dull gold, treasure in the gloom */
+        --border: #4a3c31; /* Burnt umber, like aged wood or iron */
+        --radius: 0.25rem; /* Sharp, utilitarian edges */
+    }
+    /* Light Mode (Subtle Grim Fantasy) */
+    .light-theme {
+        --background: #3c2f2f; /* Faded leather or twilight haze */
+        --foreground: #f5e6cc; /* Pale, sun-bleached parchment */
+        --card: #4a3c31; /* Dark wood or scorched earth */
+        --card-foreground: #f5e6cc;
+        --primary: #a32929; /* Brighter blood red */
+        --primary-foreground: #1a1a1a;
+        --secondary: #5c4033; /* Weathered brown */
+        --secondary-foreground: #f5e6cc;
+        --accent: #e6b800; /* Brighter gold, a faint glimmer */
+        --border: #6b4e31; /* Warm, rusted edge */
+    }
+    body {
+        background-color: var(--background);
+        color: var(--foreground);
+        font-family: 'Georgia', serif; /* Gothic, book-like typography */
+        transition: all 0.3s ease;
+        background-image: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9)), url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQYV2NkYGD4z8DAwMjIyMhQUGBgYGBgYGD4z8DAwMDAAD4eBAFPrvK/AAAAAElFTkSuQmCC'); /* Subtle parchment texture */
+        background-size: cover;
+    }
+    .card {
+        background-color: var(--card);
+        color: var(--card-foreground);
+        border: 2px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Deep shadow for depth */
+        position: relative;
+    }
+    .card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border: 1px solid rgba(212, 160, 23, 0.1); /* Faint gold trim */
+        border-radius: var(--radius);
+        pointer-events: none;
+    }
+    .btn {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        text-decoration: none;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        border: 1px solid var(--accent);
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .btn:hover {
+        background-color: var(--accent);
+        transform: translateY(-2px); /* Slight lift for interactivity */
+    }
+    code {
+        background-color: var(--secondary);
+        color: var(--secondary-foreground);
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: 'Courier New', monospace; /* Scrawled, ancient script */
+        border: 1px solid var(--border);
+    }
+    h1, h2, h3 {
+        font-family: 'Times New Roman', serif; /* Regal, gothic flair */
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Dark, ominous glow */
+    }
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <!-- Top Menu Bar -->
+    <header class="sticky top-0 z-10 bg-[var(--card)] border-b border-[var(--border)] p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold">Modpack Guide</h1>
+        <div class="flex items-center space-x-4">
+            <a href="https://panel.pebblehost.com" class="btn"><i class="fas fa-tachometer-alt mr-2"></i>Dashboard</a>
+            <button id="theme-toggle" class="p-2 rounded-full hover:bg-[var(--secondary)] transition-colors">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto p-6 max-w-4xl">
+        <section class="mb-8">
+            <h2 class="text-3xl font-semibold mb-4"><i class="fas fa-download mr-2"></i>Download the Modpack</h2>
+            <p class="mb-4">Get started by downloading the modpack ZIP file:</p>
+            <a href="https://www.curseforge.com/minecraft/modpacks/prominence-2-rpg/download/6296245" class="btn inline-block" target="_blank"><i class="fas fa-file-archive mr-2"></i>Download Now</a>
+        </section>
+        <section class="mb-8">
+            <p> After importing to your launcher, download the <a href="https://modrinth.com/mod/simple-voice-chat/versions?l=fabric"><span class="underline bold">Simple Voice Mod .jar file</spawn></a> and place it in the <code>/mods/</code> folder using your launcher. <span style="color:#5c4033">( You won't be able to use Proximity Voice otherwise. )</span></p>
+        </section>
+
+        <section class="grid md:grid-cols-2 gap-6">
+            <!-- Prism Launcher Guide -->
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-3"><i class="fas fa-cube mr-2"></i>Prism Launcher</h3>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Open <a href="https://prismlauncher.org/download/windows/" target="_blank"><code>Prism Launcher</code></a></li>
+                    <li>Click <code>Add Instance</code> > <code>Import</code></li>
+                    <li>Select the downloaded <code>modpack.zip</code></li>
+                    <li>Click <code>OK</code> and launch!</li>
+                </ol>
+                <img src="https://d-romero.com/assets/images/import-modpack.png" alt="Prism Launcher Screenshot" class="mt-4 rounded-lg w-full">
+            </div>
+
+            <!-- CurseForge Guide -->
+            <div class="card">
+                <h3 class="text-xl font-semibold mb-3"><i class="fas fa-fire mr-2"></i>CurseForge</h3>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Open the <a href="https://www.curseforge.com/download/app" target="_blank"><code>CurseForge app</code></a></li>
+                    <li>Go to <code>Minecraft</code> > <code>Create Custom Profile</code></li>
+                    <li>Click <code>Import</code> and choose <code>modpack.zip</code></li>
+                    <li>Hit <code>Play</code> to start!</li>
+                </ol>
+                <img src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/9217440031/original/kR_g2N9As42BDNJv9ky7vegqdwQ9nLB1xA.png" alt="CurseForge Screenshot" class="mt-4 rounded-lg w-full">
+            </div>
+<!-- Connection Guide -->
+<div class="card">
+    <h3 class="text-xl font-semibold mb-3"><i class="fas fa-server mr-2"></i>Connect to the Server</h3>
+    <ol class="list-decimal list-inside space-y-2">
+        <li>Open your Minecraft launcher and start the modpack.</li>
+        <li>Go to <code>Multiplayer</code> > <code>Add Server</code>.</li>
+        <li>Enter the server IP: <code>mc.brap.fun</code></li>
+        <li>Click <code>Done</code>, then join the server!</li>
+    </ol>
+    <div class="mt-4" style="text-align: center;">
+        </br>
+        <a href="https://mcsrvstat.us/server/mc.brap.fun:25565" class="font-semibold button" target="_blank"><code>Click to View Server Status</code></a>    
+    </div>
+</div>
+<div class="ancient-tome-card" style="background: #1a1410; border: 2px solid #4a3c2b; padding: 20px; max-width: 400px; color: #d4c9a8; font-family: 'Garamond', serif;">
+    <h3 style="font-size: 1.4rem; font-weight: bold; margin-bottom: 12px; color: #e6d7a1;">
+        <i style="font-family: 'FontAwesome'; margin-right: 8px;">&#xf0f3;</i> 
+        Chronicles of the Hasturian Era
+    </h3>
+    <p style="line-height: 1.5; margin-bottom: 16px;">
+        Seek the forbidden knowledge etched by the sages of old. Unveil the secrets of the realm within the sacred annals:
+    </p>
+    <a href="https://rpg.prominence.wiki/hasturian-era" target="_blank" style="display: block; text-align: center; background: #3b2d1f; color: #e6d7a1; padding: 10px; border-radius: 4px; text-decoration: none; transition: background 0.3s;">
+        <span style="font-weight: bold;">Visit the Tome of Lore</span>
+    </a>
+    <div style="text-align: center; margin-top: 16px;">
+        <p style="font-style: italic; color: #8a7a5b;">"Whispers of the past guide the bold."</p>
+    </div>
+</div>
+</section>
+
+        <section class="mt-8 card">
+            <h3 class="text-xl font-semibold mb-3"><i class="fas fa-info-circle mr-2"></i>Additional Info</h3>
+            <p>Users with a dashboard login can access it via the <span class="font-semibold">Dashboard</span> button in the top menu.</p>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[var(--card)] border-t border-[var(--border)] p-4 text-center text-sm">
+        <a href="brap.fun/"><p>brap.fun</p></a>
+    </footer>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        const toggleButton = document.getElementById('theme-toggle');
+        const body = document.body;
+        const icon = toggleButton.querySelector('i');
+
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        });
+    </script>
+</body>
+</html>
