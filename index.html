@@ -10,6 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            cursor: none !important;
         }
 
         body {
@@ -20,7 +21,6 @@
             background: #0a0a0a;
             font-family: 'Arial', sans-serif;
             overflow: hidden;
-            cursor: none; /* Hides default cursor */
         }
 
         .container {
@@ -30,9 +30,7 @@
             display: flex;
             gap: 0.15em;
             user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
+            transition: opacity 0.5s ease;
         }
 
         .slot {
@@ -54,22 +52,6 @@
 
         .slam-glow {
             animation: glow 0.3s ease-out;
-        }
-
-        .bg-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0) 80%);
-            pointer-events: none;
-            animation: subtlePulse 10s infinite ease-in-out;
-        }
-
-        @keyframes subtlePulse {
-            0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.03); opacity: 0.9; }
         }
 
         @keyframes spinLoop {
@@ -103,22 +85,178 @@
             100% { opacity: 0; transform: translateY(50px) rotate(360deg); }
         }
 
+        /* Project Menu Styles */
+        .project-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            padding: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .project-menu.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .project-panel {
+            width: 300px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+        }
+
+        .project-panel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .project-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.2) 0%,
+                rgba(255, 255, 255, 0.1) 25%,
+                rgba(255, 255, 255, 0.05) 50%,
+                rgba(255, 255, 255, 0) 75%);
+            border-radius: 20px;
+            z-index: 1;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .project-panel::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--light-x, 50%) var(--light-y, 50%),
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0.1) 20%,
+                rgba(255, 255, 255, 0.05) 40%,
+                rgba(255, 255, 255, 0) 60%);
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .project-menu.active .project-panel::after {
+            opacity: 1;
+        }
+
+        .project-panel:hover {
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         @media (max-width: 768px) {
             .slot {
                 font-size: 2rem;
             }
+            .project-panel {
+                width: 200px;
+                height: 150px;
+            }
+            .project-panel::after {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+        /* Custom cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            background-image: url('flamingsword.gif');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
     </style>
 </head>
 <body>
-    <div class="bg-effect"></div>
     <div class="container">
         <span class="slot" id="slot1">brap</span>
         <span class="slot" id="slot2">.</span>
         <span class="slot" id="slot3">fun</span>
     </div>
 
+    <div class="project-menu">
+        <a href="https://brap.fun/how-to/" class="project-panel"><img src="https://i.imgur.com/pwI1Rlt.png" alt="Project 1"></a>
+        <a href="#" class="project-panel"><img src="https://upload.wikimedia.org/wikipedia/commons/0/02/Television_static.gif?20220213052814" alt="Project 2" style="filter: brightness(0.6);"></a>
+        <a href="#" class="project-panel"><img src="https://upload.wikimedia.org/wikipedia/commons/0/02/Television_static.gif?20220213052814" alt="Project 3" style="filter: brightness(0.6);"></a>
+    </div>
+
     <script>
+        // Custom cursor implementation
+        const customCursor = document.createElement('div');
+        customCursor.className = 'custom-cursor';
+        document.body.appendChild(customCursor);
+
+        document.addEventListener('mousemove', (e) => {
+            customCursor.style.left = e.clientX + 'px';
+            customCursor.style.top = e.clientY + 'px';
+
+            // Only create star trail when we're not showing the animated cursor
+            if (!projectMenu.classList.contains('active')) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${e.pageX - 2}px`;
+                star.style.top = `${e.pageY - 2}px`;
+                document.body.appendChild(star);
+
+                const size = Math.random() * 2 + 2;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+
+                setTimeout(() => star.remove(), 1000);
+            }
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseout', () => {
+            customCursor.style.display = 'none';
+        });
+        
+        document.addEventListener('mouseover', () => {
+            customCursor.style.display = 'block';
+        });
+
         const slots = [
             { element: document.getElementById('slot1'), original: 'brap', options: ['brap', 'snap', 'trap', 'clap', 'zap', 'flip'] },
             { element: document.getElementById('slot2'), original: '.', options: ['.', '-', '_', '*', '+', '.'] },
@@ -137,7 +275,7 @@
                         slot.element.textContent = slot.original;
                         slot.element.classList.remove('scrambling');
                         slot.element.classList.add('slam-glow');
-                        setTimeout(() => slot.element.classList.remove('slam-glow'), 300); // Remove glow after animation
+                        setTimeout(() => slot.element.classList.remove('slam-glow'), 300);
                         return;
                     }
 
@@ -148,28 +286,72 @@
             });
         }
 
-        // First scramble after 3s, then every 5-10s
         setTimeout(() => {
             scramble();
             setInterval(scramble, Math.random() * 5000 + 5000);
         }, 3000);
 
-        // Mouse trail with falling stars
+        // Project Menu Logic
+        const container = document.querySelector('.container');
+        const projectMenu = document.querySelector('.project-menu');
+        const panels = document.querySelectorAll('.project-panel');
+
+        // Enter project menu
+        document.body.addEventListener('click', (e) => {
+            if (!projectMenu.classList.contains('active') && !e.target.closest('.project-panel')) {
+                container.classList.add('hidden');
+                projectMenu.classList.add('active');
+            }
+        });
+
+        // Exit project menu by clicking outside panels
+        projectMenu.addEventListener('click', (e) => {
+            if (!e.target.closest('.project-panel')) {
+                projectMenu.classList.remove('active');
+                container.classList.remove('hidden');
+                
+                // Trigger scramble when returning to base state
+                scramble();
+            }
+        });
+
+        // 3D Tilt Effect with Global Lighting
         document.addEventListener('mousemove', (e) => {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = `${e.pageX - 2}px`; // Center the star on cursor
-            star.style.top = `${e.pageY - 2}px`;
-            document.body.appendChild(star);
+            if (projectMenu.classList.contains('active')) {
+                const globalLightX = (e.clientX / window.innerWidth) * 100;
+                const globalLightY = (e.clientY / window.innerHeight) * 100;
 
-            // Randomize size slightly for variety
-            const size = Math.random() * 2 + 2; // 2-4px
-            star.style.width = `${size}px`;
-            star.style.height = `${size}px`;
+                panels.forEach(panel => {
+                    const rect = panel.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+                    const mouseX = e.clientX - centerX;
+                    const mouseY = e.clientY - centerY;
 
-            // Remove star after animation
-            setTimeout(() => star.remove(), 1000);
+                    // Enhanced tilt calculation with perspective
+                    const tiltX = (mouseY / (window.innerHeight / 2)) * 20;
+                    const tiltY = -(mouseX / (window.innerWidth / 2)) * 20;
+
+                    // Apply transform with perspective
+                    panel.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                    
+                    // Set global light position
+                    panel.style.setProperty('--light-x', `${globalLightX}%`);
+                    panel.style.setProperty('--light-y', `${globalLightY}%`);
+                });
+            }
+        });
+
+        // Reset tilt and lighting when leaving menu
+        panels.forEach(panel => {
+            panel.addEventListener('mouseleave', () => {
+                if (!projectMenu.classList.contains('active')) {
+                    panel.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                    panel.style.setProperty('--light-x', '50%');
+                    panel.style.setProperty('--light-y', '50%');
+                }
+            });
         });
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'925fc59e3ae1bd12',t:'MTc0MjkyMDAwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
