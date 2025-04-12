@@ -1,0 +1,104 @@
+# .cursorrules for Bulletin Board Webapp Project
+
+# Project Overview
+- Purpose: Create a single-page bulletin board webapp with a large canvas for pinning text and drawing notes
+- Design Goal: Clean, sleek, snappy, with Nintendo Wii-like polish and intuitiveness
+- Tech Stack: HTML5, CSS3, vanilla JavaScript, Supabase (backend), no NPM or frameworks
+- Canvas Size: 2000px × 1500px, zoomable and draggable
+- Features: Text notes (3 fonts, weights), drawing notes (pen/eraser tools), anonymous posting
+- Visual Style: Subtle, quirky, cohesive, with fluid animations and a pulsing background
+
+# Development Rules
+
+## General Guidelines
+- Use plain HTML, CSS, and JavaScript only; no external libraries or frameworks
+- Prioritize performance and responsiveness over complexity
+- Maintain a cohesive visual language (consistent colors, typography, animations)
+- Keep code modular, readable, and well-commented
+- Optimize for modern browsers (Chrome, Firefox, Safari)
+- Avoid unnecessary DOM manipulation; leverage canvas for rendering where possible
+
+## File Structure
+- Base structure:
+  - index.html
+  - css/styles.css
+  - js/main.js (entry point)
+  - js/canvas.js (canvas logic)
+  - js/notes.js (note handling)
+  - js/drawing.js (drawing interface)
+- Keep all files in root or respective folders; no complex nesting
+
+## Coding Style
+- Use camelCase for variables and functions
+- Use semantic HTML5 tags (e.g., <canvas>, <section>)
+- CSS: Use BEM naming convention for classes
+- JavaScript: Use ES6+ syntax (const, let, arrow functions)
+- Avoid inline styles; keep all styling in css/styles.css
+- Use single quotes for strings
+
+## Supabase Integration
+- Use Supabase REST API and real-time subscriptions
+- Store notes in a 'notes' table with columns:
+  - id: uuid
+  - type: string ('text' or 'drawing')
+  - x_coord: float
+  - y_coord: float
+  - content: text (JSON string for drawings, plain text for text notes)
+  - created_at: timestamp
+- Handle errors gracefully with user feedback
+- Minimize database calls; batch operations where possible
+
+## Canvas Implementation
+- Use HTML5 Canvas API for main plane and drawing interface
+- Implement normalized coordinates (0-1 range) for future-proof positioning
+- Add zoom (wheel) and drag (mouse) with smooth transitions
+- Apply subtle pulsing background with CSS or canvas animation
+- Limit canvas to 2000px × 1500px with boundary checks
+
+## UI/UX Rules
+- Context menu:
+  - Trigger on empty canvas click
+  - Options: 'Text Note', 'Draw Note', 'Cancel'
+  - Use icons (text: ✍️, draw: ✏️, cancel: ❌)
+  - Animate with fade-in and slight scale
+- Text notes:
+  - Offer 3 fonts (e.g., 'Quicksand', 'Open Sans', 'Roboto')
+  - Weights: light, medium, bold
+  - Quirky presentation (slight tilt, pin visual)
+- Drawing notes:
+  - Simple interface: pen (5 colors, 3 sizes), eraser (3 sizes), clear
+  - Export as PNG and store as base64 in DB
+- Animations:
+  - Use CSS transitions for UI elements
+  - Use requestAnimationFrame for canvas animations
+  - Keep animations subtle and fluid (e.g., 0.3s ease-in-out)
+
+## Performance
+- Debounce/throttle event listeners (e.g., mousemove, wheel)
+- Use requestAnimationFrame for all animations
+- Optimize canvas rendering with dirty rectangles
+- Compress drawing note images before storage
+- Cache frequently used elements/variables
+
+## Error Handling
+- Log errors to console during development
+- Show user-friendly messages for failures (e.g., "Failed to save note")
+- Graceful degradation for unsupported browsers
+
+## Testing
+- Test on Chrome, Firefox, Safari
+- Verify canvas interactions (zoom, drag, note placement)
+- Check Supabase CRUD operations
+- Ensure real-time updates work consistently
+
+## Additional Preferences
+- Suggest improvements aligned with Wii-like polish (e.g., subtle sound effects)
+- Avoid overcomplicating features; keep it intuitive
+- If unsure, default to simpler, cleaner solutions
+- Prompt for clarification if requirements conflict
+
+# Workflow
+- Generate code in small, testable chunks
+- Provide comments explaining complex logic
+- Suggest next steps after each implementation
+- Validate against project goals before proceeding

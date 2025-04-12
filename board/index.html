@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulletin Board</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500;700&family=Quicksand:wght@300;500;700&family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading__icon"></div>
+        <div class="loading__text">Loading Bulletin Board...</div>
+    </div>
+    
+    <!-- Main Canvas Container -->
+    <div class="canvas-container" id="canvasContainer">
+        <div class="canvas-bg"></div>
+        <canvas id="mainCanvas"></canvas>
+        
+        <!-- Viewport Gizmo -->
+        <div class="viewport-gizmo" id="viewportGizmo">
+            <div class="viewport-indicator" id="viewportIndicator"></div>
+        </div>
+    </div>
+
+    <!-- Note Templates (hidden) -->
+    <template id="textNoteTemplate">
+        <div class="note note--text">
+            <div class="note__content"></div>
+        </div>
+    </template>
+
+    <template id="drawingNoteTemplate">
+        <div class="note note--drawing">
+            <img class="note__content" src="" alt="Drawing">
+        </div>
+    </template>
+
+    <!-- Note Editor (hidden) -->
+    <div class="note-editor" id="noteEditor">
+        <div class="note-editor__toolbar">
+            <select class="note-editor__select" id="fontSelector">
+                <option value="Quicksand">Quicksand</option>
+                <option value="Open Sans">Open Sans</option>
+                <option value="Roboto">Roboto</option>
+            </select>
+            <select class="note-editor__select" id="weightSelector">
+                <option value="300">Light</option>
+                <option value="500">Medium</option>
+                <option value="700">Bold</option>
+            </select>
+        </div>
+        <textarea class="note-editor__input" id="noteContent" placeholder="Type your note here..."></textarea>
+        <div class="note-editor__buttons">
+            <button class="btn btn--danger" id="deleteNoteBtn">Delete</button>
+            <button class="btn btn--primary" id="saveNoteBtn">Save</button>
+        </div>
+    </div>
+
+    <!-- Drawing Modal (hidden) -->
+    <div class="drawing-modal" id="drawingModal">
+        <div class="drawing-container">
+            <div class="drawing-header">
+                <h2>Create Drawing</h2>
+                <div id="closeDrawingBtn" class="close-btn">&times;</div>
+            </div>
+            <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
+            
+            <div class="drawing-toolbar">
+                <div class="drawing-tools" id="drawingTools">
+                    <!-- Tool buttons will be added by JS -->
+                </div>
+                <div class="drawing-colors" id="drawingColors">
+                    <!-- Color buttons will be added by JS -->
+                </div>
+                <div class="drawing-sizes" id="drawingSizes">
+                    <!-- Size buttons will be added by JS -->
+                </div>
+            </div>
+            
+            <div class="drawing-buttons">
+                <button class="btn btn--secondary" id="cancelDrawingBtn">Cancel</button>
+                <button class="btn btn--primary" id="saveDrawingBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/notes.js"></script>
+    <script src="js/drawing.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

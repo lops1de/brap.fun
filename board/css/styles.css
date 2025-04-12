@@ -1,0 +1,708 @@
+/**
+ * styles.css - Main stylesheet for Bulletin Board
+ */
+
+/* Remove the @import since we're loading the fonts in the HTML */
+/* @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;500;700&family=Quicksand:wght@300;500;700&family=Roboto:wght@300;500;700&display=swap'); */
+
+/* CSS Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Variables */
+:root {
+    /* Colors */
+    --bg-color: #f6f6f6;
+    --primary-color: #0078d7;
+    --secondary-color: #36b1bf;
+    --accent-color: #ff6b6b;
+    --text-color: #333333;
+    --note-color: #fff8e1;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+    --transition-speed: 0.3s;
+    --animation-speed: 2s;
+    --border-radius: 6px;
+    
+    /* Animation */
+    --animation-timing: ease-in-out;
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.05);
+    
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Quicksand', 'Open Sans', 'Roboto', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: linear-gradient(-45deg, #f5f7fa, #ecf0f3, #e6eef6, #f0f2f5);
+    background-size: 400% 400%;
+    animation: gradientPulse 15s ease infinite;
+}
+
+/* Pulsing background animation */
+@keyframes gradientPulse {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Board Container */
+.board {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+    background-color: var(--background-color);
+}
+
+.board:active {
+    cursor: grabbing;
+}
+
+/* Canvas Styling */
+#board-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#board-canvas:active {
+    cursor: grabbing;
+}
+
+/* Context Menu */
+.context-menu {
+    position: absolute;
+    min-width: 150px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    z-index: 1000;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all var(--transition-speed) ease-out;
+}
+
+.context-menu--open {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.menu-item {
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+    background-color: rgba(0, 120, 215, 0.1);
+}
+
+.menu-item--danger:hover {
+    background-color: rgba(255, 82, 82, 0.1);
+    color: var(--accent-color);
+}
+
+.menu-icon {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.menu-text {
+    font-size: 0.9rem;
+}
+
+.context-menu__separator {
+    height: 1px;
+    background-color: #eaeaea;
+    margin: 4px 0;
+}
+
+/* Modal Base Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity var(--animation-speed) var(--animation-timing);
+}
+
+.modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal__content {
+    background-color: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 24px;
+    width: 450px;
+    max-width: 90%;
+    transform: translateY(-20px);
+    transition: transform var(--animation-speed) var(--animation-timing);
+}
+
+.modal.active .modal__content {
+    transform: translateY(0);
+}
+
+.modal__title {
+    font-family: sans-serif;
+    font-size: 24px;
+    margin-bottom: 16px;
+    color: var(--primary-color);
+}
+
+.modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    gap: 12px;
+}
+
+/* Button Styles */
+.btn {
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    border: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn--primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn--primary:hover {
+    background-color: #0069c0;
+}
+
+.btn--secondary {
+    background-color: #f5f5f5;
+    color: var(--text-color);
+}
+
+.btn--secondary:hover {
+    background-color: #e8e8e8;
+}
+
+.btn--danger {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn--danger:hover {
+    background-color: #ff5252;
+}
+
+.btn--tool {
+    padding: 6px;
+    min-width: 36px;
+    height: 36px;
+    border: 1px solid #ddd;
+    background-color: white;
+}
+
+.btn--tool.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.btn--color {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 0;
+}
+
+.btn--color.active {
+    border-color: var(--text-color);
+}
+
+.btn--size {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 1px solid #ddd;
+}
+
+.btn--size.active {
+    background-color: #f0f0f0;
+    border-color: #aaa;
+}
+
+.size-indicator {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--text-color);
+}
+
+.size-indicator--medium {
+    width: 8px;
+    height: 8px;
+}
+
+.size-indicator--large {
+    width: 12px;
+    height: 12px;
+}
+
+/* Text Note Modal Styles */
+#text-note-content {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--subtle-color);
+    font-family: inherit;
+    resize: vertical;
+    margin-bottom: 16px;
+    transition: border-color var(--animation-speed) var(--animation-timing);
+}
+
+#text-note-content:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.font-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.font-selector, .weight-selector {
+    display: flex;
+    gap: 8px;
+}
+
+.font-option, .weight-option {
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--subtle-color);
+    background-color: var(--white);
+    cursor: pointer;
+    transition: background-color var(--animation-speed) var(--animation-timing),
+                border-color var(--animation-speed) var(--animation-timing);
+}
+
+.font-option.active, .weight-option.active {
+    background-color: var(--primary-light);
+    border-color: var(--primary-color);
+    color: var(--white);
+}
+
+/* Drawing Note Modal Styles */
+.drawing-container {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    width: 450px;
+    padding: 20px;
+    transform: scale(0.95);
+    transition: transform var(--transition-speed);
+}
+
+.drawing-modal--open .drawing-container {
+    transform: scale(1);
+}
+
+.drawing-canvas {
+    width: 400px;
+    height: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    cursor: crosshair;
+}
+
+.drawing-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.drawing-tools {
+    display: flex;
+    gap: 5px;
+}
+
+.drawing-colors {
+    display: flex;
+    gap: 5px;
+    margin-left: 10px;
+}
+
+.drawing-sizes {
+    display: flex;
+    gap: 5px;
+    margin-left: 10px;
+}
+
+.drawing-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Viewport Gizmo */
+.viewport-gizmo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 75px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.viewport-indicator {
+    position: absolute;
+    border: 1px solid var(--primary-color);
+    background-color: rgba(0, 120, 215, 0.1);
+    pointer-events: none;
+}
+
+/* Canvas Container */
+.canvas-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    cursor: grab;
+}
+
+.canvas-container--dragging {
+    cursor: grabbing;
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: var(--bg-color);
+}
+
+/* Subtle animated background */
+.canvas-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.05;
+    background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+    background-size: 400% 400%;
+    animation: pulse-bg var(--animation-speed) ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes pulse-bg {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Note Editor */
+.note-editor {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    width: 280px;
+    padding: 15px;
+    z-index: 1000;
+    transform-origin: top left;
+    animation: editor-appear 0.25s ease-out forwards;
+}
+
+@keyframes editor-appear {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.note-editor--open {
+    display: flex;
+}
+
+.note-editor__toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.note-editor__select {
+    padding: 6px 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+    background-color: white;
+    cursor: pointer;
+}
+
+.note-editor__input {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ddd;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+    margin-bottom: 10px;
+}
+
+.note-editor__buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Font styles for notes */
+.font-quicksand {
+    font-family: var(--font-quicksand);
+}
+
+.font-opensans {
+    font-family: var(--font-opensans);
+}
+
+.font-roboto {
+    font-family: var(--font-roboto);
+}
+
+.weight-light {
+    font-weight: var(--weight-light);
+}
+
+.weight-medium {
+    font-weight: var(--weight-medium);
+}
+
+.weight-bold {
+    font-weight: var(--weight-bold);
+}
+
+/* Font loading indicator */
+.font-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    font-family: 'Quicksand', sans-serif;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.font-loading.hidden {
+    display: none;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spinner 0.8s ease-in-out infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Drawing Modal */
+.drawing-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transition-speed);
+}
+
+.drawing-modal--open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Notes */
+.note {
+    position: absolute;
+    background-color: var(--note-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    padding: 15px;
+    min-width: 150px;
+    max-width: 300px;
+    transform-origin: center;
+    transform: rotate(var(--note-tilt));
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 2;
+}
+
+.note:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.note::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.note__content {
+    word-wrap: break-word;
+    line-height: 1.5;
+    font-family: inherit;
+    margin-top: 10px;
+}
+
+.note--text {
+    --note-tilt: -1deg;
+}
+
+.note--drawing {
+    --note-tilt: 1deg;
+    padding: 25px 15px 15px;
+}
+
+.note--editing {
+    z-index: 10;
+    box-shadow: var(--shadow-lg);
+    transform: rotate(0deg) scale(1.02);
+}
+
+/* Animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.note.new {
+    animation: pulse 0.5s ease-in-out;
+}
+
+@media (max-width: 600px) {
+    .drawing-container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .drawing-canvas {
+        width: 100%;
+        height: 250px;
+    }
+} 
