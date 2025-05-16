@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Site</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', 'Roboto Mono', monospace;
+            background-color: #F4F4F5; 
+            color: #27272A; 
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        #background-pattern-canvas { /* New canvas for background pattern */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind everything else */
+            opacity: 0.8; /* Adjusted opacity */
+        }
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Above background pattern, below UI */
+        }
+        .content-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 2rem;
+            z-index: 1;
+            pointer-events: none; 
+        }
+        nav {
+            pointer-events: auto; 
+            background-color: rgba(255, 255, 255, 0.65); 
+            backdrop-filter: blur(6px);
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #D4D4D8; 
+            border-radius: 0px;
+        }
+        nav a {
+            color: #52525B; 
+            text-decoration: none;
+            margin-right: 1.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
+        nav a:last-child {
+            margin-right: 0;
+        }
+        nav a:hover, nav a.active {
+            color: #09090B; 
+            transform: translateY(-2px);
+        }
+        .section-content { /* General text content box */
+            pointer-events: auto;
+            max-width: 400px;
+            background-color: rgba(240, 240, 245, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 1.5rem;
+            border: 1px solid #C0C0C8;
+            border-radius: 0px;
+            align-self: flex-end; 
+            margin-bottom: 1rem;
+        }
+        .section-content h2 {
+            font-size: 1.5rem;
+            color: #18181B;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            border-bottom: 1px solid #A1A1AA;
+            padding-bottom: 0.5rem;
+        }
+        .section-content p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #3F3F46;
+        }
+
+        /* Project Detail Panel */
+        #project-detail-panel {
+            display: none; 
+            position: fixed; 
+            bottom: 2rem;   
+            right: 2rem;    
+            width: 300px;
+            background-color: rgba(230, 230, 235, 0.85); 
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border: 1px solid #B0B0B8;
+            border-radius: 0px;
+            z-index: 10; 
+            pointer-events: auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        #project-detail-panel h3 {
+            font-size: 1.25rem;
+            color: #09090B;
+            margin-bottom: 0.5rem;
+        }
+        #project-detail-panel p {
+            font-size: 0.85rem;
+            color: #3F3F46;
+            margin-bottom: 1rem;
+        }
+        #project-detail-panel button {
+            background-color: #52525B;
+            color: #F4F4F5;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 0px;
+        }
+        #project-detail-panel button:hover {
+            background-color: #27272A;
+        }
+
+        /* SVG for drawing lines */
+        #project-line-svg {
+            position:fixed; 
+            top:0; 
+            left:0; 
+            width:100%; 
+            height:100%; 
+            z-index:5; 
+            pointer-events:none;
+        }
+        #project-connector-line {
+            stroke: #FF6B6B; /* Red-orange color for the line to match highlight */
+            stroke-width: 1.5px;
+            stroke-dasharray: 4 2; 
+        }
+
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .content-overlay {
+                padding: 1rem;
+            }
+            nav {
+                width: calc(100% - 2rem);
+                text-align: center;
+                margin-bottom: 1rem;
+            }
+            nav a {
+                margin-right: 0.75rem;
+                margin-left: 0.75rem;
+            }
+            .section-content { 
+                max-width: calc(100% - 2rem); 
+                align-self: center;
+                margin-bottom: 1rem;
+                margin-left: 0; 
+                margin-right: 0; 
+            }
+            #project-detail-panel {
+                width: calc(100% - 4rem); 
+                bottom: 1rem;
+                left: 2rem; 
+                right: 2rem;
+                max-width: 350px; 
+                margin: 0 auto; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background-pattern-canvas"></canvas> <canvas id="three-canvas"></canvas>
+    <svg id="project-line-svg">
+        <line id="project-connector-line" x1="0" y1="0" x2="0" y2="0" />
+    </svg>
+    <div class="content-overlay">
+        <nav>
+            <a href="#" data-section="home">HOME</a>
+            <a href="#" data-section="about">ABOUT</a>
+            <a href="#" data-section="projects">PROJECTS</a>
+            <a href="#" data-section="contact">CONTACT</a>
+        </nav>
+        <div id="section-display" class="section-content">
+            </div>
+    </div>
+
+    <div id="project-detail-panel">
+        <h3 id="project-panel-title">Project Title</h3>
+        <p id="project-panel-description">Project description goes here...</p>
+        <button id="close-project-panel">Close</button>
+    </div>
+
+    <script>
+        // --- BACKGROUND PATTERN SETUP ---
+        let bgCanvas, bgCtx;
+        let bgNodes = [];
+        const numBgNodes = 50; 
+        const bgNodeConnectionDistance = 150; 
+        const bgNodeBaseSpeed = 0.05; // Reduced base speed for individual node movement
+        let currentBgShiftX = 0; 
+        let currentBgShiftY = 0; 
+        let targetBgShiftX = 0;  
+        let targetBgShiftY = 0;  
+
+        function initBackgroundPattern() {
+            bgCanvas = document.getElementById('background-pattern-canvas');
+            bgCtx = bgCanvas.getContext('2d');
+            resizeBackgroundCanvas();
+
+            for (let i = 0; i < numBgNodes; i++) {
+                bgNodes.push({
+                    x: Math.random() * bgCanvas.width,
+                    y: Math.random() * bgCanvas.height,
+                    vx: (Math.random() - 0.5) * bgNodeBaseSpeed, 
+                    vy: (Math.random() - 0.5) * bgNodeBaseSpeed, 
+                    radius: Math.random() * 1.5 + 0.5 
+                });
+            }
+        }
+
+        function resizeBackgroundCanvas() {
+            if (!bgCanvas) return; 
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            if (bgNodes.length > 0) { 
+                 bgNodes.forEach(node => {
+                    node.x = Math.random() * bgCanvas.width;
+                    node.y = Math.random() * bgCanvas.height;
+                });
+            }
+        }
+
+        function animateBackgroundPattern() {
+            if (!bgCtx) return; 
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            bgNodes.forEach(node => {
+                node.x += node.vx + currentBgShiftX;
+                node.y += node.vy + currentBgShiftY;
+
+                if (node.x < 0) node.x = bgCanvas.width;
+                if (node.x > bgCanvas.width) node.x = 0;
+                if (node.y < 0) node.y = bgCanvas.height;
+                if (node.y > bgCanvas.height) node.y = 0;
+
+                bgCtx.beginPath();
+                bgCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                bgCtx.fillStyle = '#666677'; 
+                bgCtx.fill();
+            });
+
+            for (let i = 0; i < bgNodes.length; i++) {
+                for (let j = i + 1; j < bgNodes.length; j++) {
+                    const dx = bgNodes[i].x - bgNodes[j].x;
+                    const dy = bgNodes[i].y - bgNodes[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < bgNodeConnectionDistance) {
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(bgNodes[i].x, bgNodes[i].y);
+                        bgCtx.lineTo(bgNodes[j].x, bgNodes[j].y);
+                        const opacity = 1 - (distance / bgNodeConnectionDistance);
+                        bgCtx.strokeStyle = `rgba(80, 80, 90, ${opacity * 0.6})`; 
+                        bgCtx.lineWidth = 0.5;
+                        bgCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateBackgroundPattern);
+        }
+
+
+        // --- THREE.JS SCENE SETUP ---
+        let scene, camera, renderer, helixGroup;
+        const spheres = []; 
+        let projectSpheres = []; 
+        let glassMaterial, highlightedProjectMaterial; 
+        const initialCameraPosition = new THREE.Vector3(0, 1, 9); 
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        let selectedProjectSphere = null; 
+        let currentOpenProject = null; 
+
+        const sectionDisplay = document.getElementById('section-display');
+        const navLinks = document.querySelectorAll('nav a');
+        const projectDetailPanel = document.getElementById('project-detail-panel');
+        const projectPanelTitle = document.getElementById('project-panel-title');
+        const projectPanelDescription = document.getElementById('project-panel-description');
+        const closeProjectPanelButton = document.getElementById('close-project-panel');
+        const connectorLine = document.getElementById('project-connector-line');
+        
+        const numSpheresPerHelix = 100; 
+        const helixHeight = 10; 
+
+        const projectData = [
+            { id: 'proj1', title: 'TBD', description: '... no data available.', sphereIndex: 60 }, 
+            { id: 'proj2', title: 'TBD', description: '... no data available.', sphereIndex: 65 },
+            { id: 'proj3', title: 'TBD', description: '... no data available.', sphereIndex: 70 },
+            { id: 'proj4', title: 'TBD', description: '... no data available.', sphereIndex: 75 }
+        ];
+
+        // Increased bgShift magnitudes for more pronounced effect
+        const sections = {
+            home: {
+                title: "Welcome",
+                text: "This is a digital space. Exploring concepts at the intersection of design, technology, and art. The central form represents interconnected ideas, constantly evolving.",
+                cameraPos: new THREE.Vector3(0, 1, 9), 
+                cameraLookAt: new THREE.Vector3(0, 0, 0),
+                bgShift: { x: 0, y: 0 } 
+            },
+            about: {
+                title: "About",
+                text: "Driven by curiosity and a passion for creating unique digital experiences. My work focuses on minimalist aesthetics, interactive design, and exploring new forms of expression.",
+                cameraPos: new THREE.Vector3(4, 0, 7), 
+                cameraLookAt: new THREE.Vector3(0, 0.5, 0),
+                bgShift: { x: -0.4, y: 0.08 } // Increased magnitude
+            },
+            projects: {
+                title: "Projects", 
+                text: "Select a highlighted node on the structure to learn more about a specific endeavor. Each represents a unique exploration.",
+                cameraPos: new THREE.Vector3(0, 6, 7), 
+                cameraLookAt: new THREE.Vector3(0, 1, 0),
+                bgShift: { x: 0, y: -0.4 } // Increased magnitude
+            },
+            contact: {
+                title: "Contact",
+                text: "For inquiries, collaborations, or just to connect, feel free to reach out. (Placeholder for contact form/links).",
+                cameraPos: new THREE.Vector3(-7, -1, 8), 
+                cameraLookAt: new THREE.Vector3(0, -0.5, 0),
+                bgShift: { x: 0.4, y: 0.15 } // Increased magnitude
+            }
+        };
+        let currentSection = 'home';
+        targetBgShiftX = sections[currentSection].bgShift.x; 
+        targetBgShiftY = sections[currentSection].bgShift.y; 
+        let targetCameraPos = new THREE.Vector3().copy(sections.home.cameraPos);
+        let targetCameraLookAt = new THREE.Vector3().copy(sections.home.cameraLookAt);
+
+
+        function initThree() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0xF4F4F5, 0.045); 
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000); 
+            camera.position.copy(initialCameraPosition);
+            camera.lookAt(sections.home.cameraLookAt);
+
+            const canvas = document.getElementById('three-canvas');
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000, 0); 
+
+            const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.8);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+            directionalLight.position.set(5, 10, 7);
+            scene.add(directionalLight);
+            const pointLight = new THREE.PointLight(0xE0E0FF, 0.7, 150);
+            pointLight.position.set(-5, -3, 5);
+            scene.add(pointLight);
+
+            helixGroup = new THREE.Group();
+            const radius = 2;
+            const tubeRadius = 0.1;
+
+            glassMaterial = new THREE.MeshStandardMaterial({
+                color: 0x009B77, metalness: 0.1, roughness: 0.05,
+                transparent: true, opacity: 0.70,
+            });
+
+            highlightedProjectMaterial = new THREE.MeshStandardMaterial({
+                color: 0xFF6B27, 
+                metalness: 0.1, roughness: 0.05,
+                transparent: true, opacity: 0.90,
+                emissive: 0xFF8533, 
+                emissiveIntensity: 0.7 
+            });
+            
+            const projectSphereMap = new Map();
+
+            for (let i = 0; i < numSpheresPerHelix; i++) {
+                const t = (i / numSpheresPerHelix) * turns * Math.PI * 2;
+                const y = (i / numSpheresPerHelix) * helixHeight - helixHeight / 2;
+
+                const x1 = radius * Math.cos(t);
+                const z1 = radius * Math.sin(t);
+                const sphere1Geo = new THREE.SphereGeometry(tubeRadius * 2.8, 20, 20);
+                const sphere1 = new THREE.Mesh(sphere1Geo, glassMaterial.clone()); 
+                sphere1.position.set(x1, y, z1);
+                helixGroup.add(sphere1);
+                spheres.push(sphere1);
+                projectData.forEach(p => { if (p.sphereIndex === i) { projectSphereMap.set(p.id, sphere1); sphere1.userData.projectId = p.id; } });
+
+                const x2 = radius * Math.cos(t + Math.PI);
+                const z2 = radius * Math.sin(t + Math.PI);
+                const sphere2Geo = new THREE.SphereGeometry(tubeRadius * 2.8, 20, 20);
+                const sphere2 = new THREE.Mesh(sphere2Geo, glassMaterial.clone());
+                sphere2.position.set(x2, y, z2);
+                helixGroup.add(sphere2);
+                spheres.push(sphere2);
+                projectData.forEach(p => { if (p.sphereIndex === i + numSpheresPerHelix) { projectSphereMap.set(p.id, sphere2); sphere2.userData.projectId = p.id; } });
+            }
+            
+            projectSpheres = projectData.map(p => projectSphereMap.get(p.id)).filter(s => s); 
+
+            scene.add(helixGroup);
+
+            window.addEventListener('resize', onCombinedWindowResize, false); 
+            renderer.domElement.addEventListener('mousedown', onCanvasMouseDown, false); 
+            closeProjectPanelButton.addEventListener('click', closeProjectDetails);
+
+            updateContent(currentSection);
+            updateNavLinks(currentSection);
+            updateProjectSphereHighlights();
+        }
+        
+        const turns = 5; 
+
+        function onCombinedWindowResize() {
+            if (camera && renderer) { 
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+            resizeBackgroundCanvas(); 
+        }
+
+
+        let clock = new THREE.Clock(); 
+
+        function animateThreeScene() { 
+            requestAnimationFrame(animateThreeScene); 
+            const delta = clock.getDelta();
+            const elapsedTime = clock.getElapsedTime();
+
+            // Increased interpolation factor for faster background shift reaction
+            currentBgShiftX += (targetBgShiftX - currentBgShiftX) * 2.0; 
+            currentBgShiftY += (targetBgShiftY - currentBgShiftY) * 2.0;
+
+            if (helixGroup) {
+                helixGroup.rotation.y += delta * 0.03; 
+            }
+
+            spheres.forEach((sphere) => {
+                const sphereIndexInAllSpheres = spheres.indexOf(sphere);
+                const originalYBase = (Math.floor(sphereIndexInAllSpheres / 2) / numSpheresPerHelix) * helixHeight - helixHeight / 2;
+                sphere.position.y = originalYBase + Math.sin(elapsedTime * 0.35 + sphereIndexInAllSpheres * 0.3) * 0.12;
+            });
+
+            if (camera && targetCameraPos && targetCameraLookAt) { 
+                camera.position.lerp(targetCameraPos, 0.04); 
+                const tempLookAt = new THREE.Vector3();
+                camera.getWorldDirection(tempLookAt).multiplyScalar(10).add(camera.position);
+                tempLookAt.lerp(targetCameraLookAt, 0.04);
+                camera.lookAt(tempLookAt);
+            }
+            
+            if (renderer && scene && camera) { 
+                 renderer.render(scene, camera);
+            }
+
+            if (currentOpenProject && selectedProjectSphere) {
+                updateConnectorLine();
+            } else {
+                if (connectorLine) { 
+                    connectorLine.setAttribute('x1', '0'); connectorLine.setAttribute('y1', '0');
+                    connectorLine.setAttribute('x2', '0'); connectorLine.setAttribute('y2', '0');
+                }
+            }
+        }
+
+        function updateContent(sectionKey, projectOverride = null) {
+            const sectionData = sections[sectionKey];
+            if (projectOverride) { 
+                 sectionDisplay.innerHTML = `
+                    <h2>${projectOverride.title}</h2>
+                    <p>Viewing details for: ${projectOverride.title}. Use panel for more info.</p>
+                `;
+            } else if (sectionData) {
+                sectionDisplay.innerHTML = `
+                    <h2>${sectionData.title}</h2>
+                    <p>${sectionData.text}</p>
+                `;
+            }
+            if (currentOpenProject && sectionKey === 'projects') {
+                sectionDisplay.style.display = 'none';
+            } else {
+                sectionDisplay.style.display = 'block';
+            }
+        }
+        
+        function updateNavLinks(activeSectionKey) {
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.section === activeSectionKey);
+            });
+        }
+
+        function updateProjectSphereHighlights() {
+            const isProjectsSection = (currentSection === 'projects');
+            projectSpheres.forEach(sphere => {
+                if (sphere) { 
+                    if (currentOpenProject && selectedProjectSphere === sphere) {
+                        sphere.material = highlightedProjectMaterial;
+                    } else {
+                        sphere.material = isProjectsSection ? highlightedProjectMaterial : glassMaterial;
+                    }
+                }
+            });
+        }
+        
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const sectionKey = e.target.dataset.section;
+                if (sectionKey && sections[sectionKey]) {
+                    currentSection = sectionKey;
+                    targetCameraPos.copy(sections[sectionKey].cameraPos);
+                    targetCameraLookAt.copy(sections[sectionKey].cameraLookAt);
+                    
+                    targetBgShiftX = sections[sectionKey].bgShift.x;
+                    targetBgShiftY = sections[sectionKey].bgShift.y;
+
+                    closeProjectDetails(); 
+                    updateContent(sectionKey);
+                    updateNavLinks(sectionKey);
+                    updateProjectSphereHighlights(); 
+                }
+            });
+        });
+
+        function onCanvasMouseDown(event) {
+            if (currentSection !== 'projects' || !camera) return; 
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(projectSpheres, true); 
+
+            if (intersects.length > 0) {
+                const clickedObject = intersects[0].object;
+                if (clickedObject.isMesh && clickedObject.userData.projectId) {
+                    const project = projectData.find(p => p.id === clickedObject.userData.projectId);
+                    if (project) {
+                        openProjectDetails(project, clickedObject);
+                    }
+                }
+            }
+        }
+
+        function openProjectDetails(project, sphere) {
+            currentOpenProject = project.id;
+            selectedProjectSphere = sphere;
+
+            projectPanelTitle.textContent = project.title;
+            projectPanelDescription.textContent = project.description;
+            projectDetailPanel.style.display = 'block';
+            
+            sectionDisplay.style.display = 'none'; 
+
+            projectSpheres.forEach(s => {
+                if (s) { 
+                    s.material = (s === sphere) ? highlightedProjectMaterial : glassMaterial;
+                }
+            });
+             if(sphere) sphere.material = highlightedProjectMaterial;
+
+            updateConnectorLine(); 
+        }
+
+        function closeProjectDetails() {
+            currentOpenProject = null;
+            selectedProjectSphere = null;
+            if (projectDetailPanel) projectDetailPanel.style.display = 'none'; 
+            if (connectorLine) { 
+                connectorLine.setAttribute('x1', '0'); connectorLine.setAttribute('y1', '0');
+                connectorLine.setAttribute('x2', '0'); connectorLine.setAttribute('y2', '0');
+            }
+            
+            updateProjectSphereHighlights(); 
+            if (currentSection === 'projects' && sectionDisplay) { 
+                 sectionDisplay.style.display = 'block'; 
+                 updateContent('projects'); 
+            }
+        }
+
+        function updateConnectorLine() {
+            if (!currentOpenProject || !selectedProjectSphere || !projectDetailPanel || !camera || !renderer || !connectorLine) return; 
+
+            const panelRect = projectDetailPanel.getBoundingClientRect();
+            const panelAnchorX = panelRect.left; 
+            const panelAnchorY = panelRect.top + panelRect.height / 2;
+
+            const sphereWorldPosition = new THREE.Vector3();
+            selectedProjectSphere.getWorldPosition(sphereWorldPosition);
+
+            const screenPosition = sphereWorldPosition.project(camera);
+            const sphereScreenX = (screenPosition.x * 0.5 + 0.5) * renderer.domElement.clientWidth;
+            const sphereScreenY = (screenPosition.y * -0.5 + 0.5) * renderer.domElement.clientHeight;
+
+            connectorLine.setAttribute('x1', sphereScreenX.toString());
+            connectorLine.setAttribute('y1', sphereScreenY.toString());
+            connectorLine.setAttribute('x2', panelAnchorX.toString());
+            connectorLine.setAttribute('y2', panelAnchorY.toString());
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBackgroundPattern(); 
+            initThree();
+            
+            animateBackgroundPattern(); 
+            animateThreeScene(); 
+        });
+
+    </script>
+</body>
+</html>
