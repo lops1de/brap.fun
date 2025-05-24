@@ -18,14 +18,14 @@
             margin: 0;
             padding: 0;
         }
-        #background-pattern-canvas { /* New canvas for background pattern */
+        #background-pattern-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Behind everything else */
-            opacity: 0.8; /* Adjusted opacity */
+            z-index: -1;
+            opacity: 0.8;
         }
         #three-canvas {
             position: fixed;
@@ -300,6 +300,83 @@
             background: linear-gradient(to right, #009B77, #00C9A7);
             box-shadow: 0 0 10px rgba(0, 155, 119, 0.5);
         }
+
+        /* Hidden Elements and Easter Eggs */
+        .hidden-element {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+        .hidden-element:hover {
+            opacity: 0.1;
+        }
+        .terminal-window {
+            display: none;
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #009B77;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            color: #009B77;
+            z-index: 1000;
+            max-width: 400px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .terminal-window.active {
+            display: block;
+        }
+        .terminal-input {
+            background: transparent;
+            border: none;
+            color: #009B77;
+            font-family: 'Courier New', monospace;
+            width: 100%;
+            outline: none;
+        }
+        .glitch-text {
+            position: relative;
+            animation: glitch 1s infinite;
+        }
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        .data-fragment {
+            position: absolute;
+            color: #009B77;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .data-fragment.visible {
+            opacity: 0.7;
+        }
+
+        /* Floating Text Styles */
+        .floating-text {
+            position: absolute;
+            color: rgba(0, 155, 119, 0.6);
+            font-family: 'Bank Gothic', sans-serif;
+            font-size: 0.8rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 2s ease;
+            text-shadow: 0 0 5px rgba(0, 155, 119, 0.3);
+        }
+        .floating-text.visible {
+            opacity: 0.8;
+        }
+        .floating-text.fade-out {
+            opacity: 0;
+        }
     </style>
 </head>
 <body>
@@ -337,6 +414,15 @@
         <p id="project-panel-description">Project description goes here...</p>
         <button id="close-project-panel">Close</button>
     </div>
+
+    <!-- Hidden Terminal Window -->
+    <div id="terminal-window" class="terminal-window">
+        <div id="terminal-output"></div>
+        <input type="text" id="terminal-input" class="terminal-input" placeholder=">">
+    </div>
+
+    <!-- Hidden Data Fragments -->
+    <div id="data-fragments-container"></div>
 
     <script>
     // --- ENTRYPOINT PARTICLE BACKGROUND (TEAL) ---
@@ -490,84 +576,153 @@
     </script>
 
     <script>
-        // --- BACKGROUND PATTERN SETUP ---
+        // Single Background Pattern System
         let bgCanvas, bgCtx;
         let bgNodes = [];
-        const numBgNodes = 50; 
-        const bgNodeConnectionDistance = 150; 
-        const bgNodeBaseSpeed = 0.05; // Reduced base speed for individual node movement
-        let currentBgShiftX = 0; 
-        let currentBgShiftY = 0; 
-        let targetBgShiftX = 0;  
-        let targetBgShiftY = 0;  
+        const numBgNodes = 40;
+        const bgNodeConnectionDistance = 150;
+        const bgNodeBaseSpeed = 0.05;
+        const bgNodeFadeDistance = 100;
+        const bgNodeSpawnMargin = 50;
+        let currentBgShiftX = 0;
+        let currentBgShiftY = 0;
+        let targetBgShiftX = 0;
+        let targetBgShiftY = 0;
+
+        class BackgroundNode {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * bgNodeBaseSpeed;
+                this.vy = (Math.random() - 0.5) * bgNodeBaseSpeed;
+                this.radius = Math.random() * 1.5 + 0.5;
+                this.opacity = 1;
+            }
+
+            update() {
+                this.x += this.vx + currentBgShiftX;
+                this.y += this.vy + currentBgShiftY;
+
+                // Calculate distance from center
+                const centerX = bgCanvas.width / 2;
+                const centerY = bgCanvas.height / 2;
+                const dx = this.x - centerX;
+                const dy = this.y - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Fade out based on distance
+                const maxDistance = Math.max(bgCanvas.width, bgCanvas.height) / 2;
+                this.opacity = Math.max(0, 1 - (distance / maxDistance));
+
+                // Wrap around or respawn
+                if (this.x < -bgNodeSpawnMargin) {
+                    this.x = bgCanvas.width + bgNodeSpawnMargin;
+                    this.y = Math.random() * bgCanvas.height;
+                } else if (this.x > bgCanvas.width + bgNodeSpawnMargin) {
+                    this.x = -bgNodeSpawnMargin;
+                    this.y = Math.random() * bgCanvas.height;
+                }
+                if (this.y < -bgNodeSpawnMargin) {
+                    this.y = bgCanvas.height + bgNodeSpawnMargin;
+                    this.x = Math.random() * bgCanvas.width;
+                } else if (this.y > bgCanvas.height + bgNodeSpawnMargin) {
+                    this.y = -bgNodeSpawnMargin;
+                    this.x = Math.random() * bgCanvas.width;
+                }
+            }
+
+            draw() {
+                if (this.opacity <= 0) return;
+                
+                bgCtx.beginPath();
+                bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                bgCtx.fillStyle = `rgba(102, 102, 119, ${this.opacity * 0.6})`;
+                bgCtx.fill();
+            }
+        }
 
         function initBackgroundPattern() {
             bgCanvas = document.getElementById('background-pattern-canvas');
             bgCtx = bgCanvas.getContext('2d');
             resizeBackgroundCanvas();
 
+            // Initialize nodes
+            bgNodes = [];
             for (let i = 0; i < numBgNodes; i++) {
-                bgNodes.push({
-                    x: Math.random() * bgCanvas.width,
-                    y: Math.random() * bgCanvas.height,
-                    vx: (Math.random() - 0.5) * bgNodeBaseSpeed, 
-                    vy: (Math.random() - 0.5) * bgNodeBaseSpeed, 
-                    radius: Math.random() * 1.5 + 0.5 
-                });
+                bgNodes.push(new BackgroundNode(
+                    Math.random() * bgCanvas.width,
+                    Math.random() * bgCanvas.height
+                ));
             }
         }
 
         function resizeBackgroundCanvas() {
-            if (!bgCanvas) return; 
+            if (!bgCanvas) return;
             bgCanvas.width = window.innerWidth;
             bgCanvas.height = window.innerHeight;
-            if (bgNodes.length > 0) { 
-                 bgNodes.forEach(node => {
-                    node.x = Math.random() * bgCanvas.width;
-                    node.y = Math.random() * bgCanvas.height;
-                });
-            }
         }
 
         function animateBackgroundPattern() {
-            if (!bgCtx) return; 
+            if (!bgCtx) return;
             bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
 
+            // Update and draw nodes
             bgNodes.forEach(node => {
-                node.x += node.vx + currentBgShiftX;
-                node.y += node.vy + currentBgShiftY;
-
-                if (node.x < 0) node.x = bgCanvas.width;
-                if (node.x > bgCanvas.width) node.x = 0;
-                if (node.y < 0) node.y = bgCanvas.height;
-                if (node.y > bgCanvas.height) node.y = 0;
-
-                bgCtx.beginPath();
-                bgCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                bgCtx.fillStyle = '#666677'; 
-                bgCtx.fill();
+                node.update();
+                node.draw();
             });
+
+            // Draw connections with optimized distance checking
+            const centerX = bgCanvas.width / 2;
+            const centerY = bgCanvas.height / 2;
+            const maxDistance = Math.max(bgCanvas.width, bgCanvas.height) / 2;
 
             for (let i = 0; i < bgNodes.length; i++) {
                 for (let j = i + 1; j < bgNodes.length; j++) {
-                    const dx = bgNodes[i].x - bgNodes[j].x;
-                    const dy = bgNodes[i].y - bgNodes[j].y;
+                    const node1 = bgNodes[i];
+                    const node2 = bgNodes[j];
+
+                    // Skip if either node is fully transparent
+                    if (node1.opacity <= 0 || node2.opacity <= 0) continue;
+
+                    const dx = node1.x - node2.x;
+                    const dy = node1.y - node2.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
 
                     if (distance < bgNodeConnectionDistance) {
-                        bgCtx.beginPath();
-                        bgCtx.moveTo(bgNodes[i].x, bgNodes[i].y);
-                        bgCtx.lineTo(bgNodes[j].x, bgNodes[j].y);
-                        const opacity = 1 - (distance / bgNodeConnectionDistance);
-                        bgCtx.strokeStyle = `rgba(80, 80, 90, ${opacity * 0.6})`; 
-                        bgCtx.lineWidth = 0.5;
-                        bgCtx.stroke();
+                        // Calculate connection opacity based on both nodes' opacity and distance
+                        const connectionOpacity = Math.min(
+                            node1.opacity,
+                            node2.opacity,
+                            1 - (distance / bgNodeConnectionDistance)
+                        ) * 0.6;
+
+                        if (connectionOpacity > 0) {
+                            bgCtx.beginPath();
+                            bgCtx.moveTo(node1.x, node1.y);
+                            bgCtx.lineTo(node2.x, node2.y);
+                            bgCtx.strokeStyle = `rgba(80, 80, 90, ${connectionOpacity})`;
+                            bgCtx.lineWidth = 0.5;
+                            bgCtx.stroke();
+                        }
                     }
                 }
             }
+
             requestAnimationFrame(animateBackgroundPattern);
         }
 
+        // Update window resize handler
+        window.addEventListener('resize', () => {
+            resizeBackgroundCanvas();
+            // Maintain node positions relative to new canvas size
+            const scaleX = bgCanvas.width / (bgCanvas.width || 1);
+            const scaleY = bgCanvas.height / (bgCanvas.height || 1);
+            bgNodes.forEach(node => {
+                node.x *= scaleX;
+                node.y *= scaleY;
+            });
+        });
 
         // --- THREE.JS SCENE SETUP ---
         let scene, camera, renderer, helixGroup;
@@ -593,7 +748,13 @@
         const helixHeight = 10; 
 
         const projectData = [
-            { id: 'proj1', title: 'TBD', description: '... no data available.', sphereIndex: 60 }, 
+            { 
+                id: 'proj1', 
+                title: 'Brap Protocol', 
+                description: 'A revolutionary approach to digital flatulence. Our proprietary algorithm ensures maximum efficiency in gas-based data transmission.',
+                sphereIndex: 60,
+                hint: 'Press Ctrl + Alt + T to access the terminal'
+            },
             { id: 'proj2', title: 'TBD', description: '... no data available.', sphereIndex: 65 },
             { id: 'proj3', title: 'TBD', description: '... no data available.', sphereIndex: 70 },
             { id: 'proj4', title: 'TBD', description: '... no data available.', sphereIndex: 75 }
@@ -728,6 +889,61 @@
 
         let clock = new THREE.Clock(); 
 
+        // Update scene manipulation variables
+        let sceneEffects = {
+            rotationSpeed: 0.03,
+            colorScheme: 'default',
+            particleEffect: false,
+            glitchMode: false,
+            originalMaterials: new Map(),
+            originalFogColor: 0xF4F4F5,
+            originalFogDensity: 0.045
+        };
+
+        // Update the color schemes with more distinct highlight colors
+        const colorSchemes = {
+            default: {
+                nodeColor: 0x009B77,
+                nodeEmissive: 0x000000,
+                highlightColor: 0xFF6B27,
+                highlightEmissive: 0xFF8533,
+                fogColor: 0xF4F4F5,
+                fogDensity: 0.045,
+                connectorColor: '#009B77',
+                textColor: 'rgba(0, 155, 119, 0.7)'
+            },
+            neon: {
+                nodeColor: 0x00FF00,
+                nodeEmissive: 0x000000,
+                highlightColor: 0xFF00FF,
+                highlightEmissive: 0xFF00FF,
+                fogColor: 0x000000,
+                fogDensity: 0.08,
+                connectorColor: '#00FF00',
+                textColor: 'rgba(0, 255, 0, 0.7)'
+            },
+            retro: {
+                nodeColor: 0xFF00FF,
+                nodeEmissive: 0x000000,
+                highlightColor: 0x00FFFF,
+                highlightEmissive: 0x00FFFF,
+                fogColor: 0x000000,
+                fogDensity: 0.06,
+                connectorColor: '#FF00FF',
+                textColor: 'rgba(255, 0, 255, 0.7)'
+            },
+            thermal: {
+                nodeColor: 0xFF4500,
+                nodeEmissive: 0x000000,
+                highlightColor: 0x00FFFF,
+                highlightEmissive: 0x00FFFF,
+                fogColor: 0x000000,
+                fogDensity: 0.07,
+                connectorColor: '#FF4500',
+                textColor: 'rgba(255, 69, 0, 0.7)'
+            }
+        };
+
         function animateThreeScene() { 
             requestAnimationFrame(animateThreeScene); 
             const delta = clock.getDelta();
@@ -738,7 +954,7 @@
             currentBgShiftY += (targetBgShiftY - currentBgShiftY) * 2.0;
 
             if (helixGroup) {
-                helixGroup.rotation.y += delta * 0.03; 
+                helixGroup.rotation.y += delta * sceneEffects.rotationSpeed; 
             }
 
             spheres.forEach((sphere) => {
@@ -766,6 +982,14 @@
                     connectorLine.setAttribute('x1', '0'); connectorLine.setAttribute('y1', '0');
                     connectorLine.setAttribute('x2', '0'); connectorLine.setAttribute('y2', '0');
                 }
+            }
+
+            // Apply glitch effect if enabled
+            if (sceneEffects.glitchMode) {
+                spheres.forEach(sphere => {
+                    sphere.position.x += (Math.random() - 0.5) * 0.01;
+                    sphere.position.z += (Math.random() - 0.5) * 0.01;
+                });
             }
         }
 
@@ -797,12 +1021,25 @@
 
         function updateProjectSphereHighlights() {
             const isProjectsSection = (currentSection === 'projects');
+            const currentScheme = colorSchemes[sceneEffects.colorScheme];
+
             projectSpheres.forEach(sphere => {
-                if (sphere) { 
+                if (sphere) {
                     if (currentOpenProject && selectedProjectSphere === sphere) {
-                        sphere.material = highlightedProjectMaterial;
+                        // Selected project sphere
+                        sphere.material.color.setHex(currentScheme.highlightColor);
+                        sphere.material.emissive.setHex(currentScheme.highlightEmissive);
+                        sphere.material.emissiveIntensity = 0.7;
+                    } else if (isProjectsSection) {
+                        // Projects section - highlight all project spheres
+                        sphere.material.color.setHex(currentScheme.highlightColor);
+                        sphere.material.emissive.setHex(currentScheme.highlightEmissive);
+                        sphere.material.emissiveIntensity = 0.5;
                     } else {
-                        sphere.material = isProjectsSection ? highlightedProjectMaterial : glassMaterial;
+                        // Other sections - use node color
+                        sphere.material.color.setHex(currentScheme.nodeColor);
+                        sphere.material.emissive.setHex(currentScheme.nodeEmissive);
+                        sphere.material.emissiveIntensity = 0;
                     }
                 }
             });
@@ -854,18 +1091,23 @@
 
             projectPanelTitle.textContent = project.title;
             projectPanelDescription.textContent = project.description;
-            projectDetailPanel.style.display = 'block';
             
-            sectionDisplay.style.display = 'none'; 
+            // Update materials using the new highlighting system
+            updateProjectSphereHighlights();
 
-            projectSpheres.forEach(s => {
-                if (s) { 
-                    s.material = (s === sphere) ? highlightedProjectMaterial : glassMaterial;
-                }
-            });
-             if(sphere) sphere.material = highlightedProjectMaterial;
+            if (project.hint) {
+                const hintElement = document.createElement('div');
+                hintElement.style.fontSize = '0.8rem';
+                hintElement.style.color = colorSchemes[sceneEffects.colorScheme].textColor;
+                hintElement.style.marginTop = '1rem';
+                hintElement.style.fontStyle = 'italic';
+                hintElement.textContent = project.hint;
+                projectDetailPanel.appendChild(hintElement);
+            }
 
-            updateConnectorLine(); 
+            projectDetailPanel.style.display = 'block';
+            sectionDisplay.style.display = 'none';
+            updateConnectorLine();
         }
 
         function closeProjectDetails() {
@@ -905,13 +1147,443 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            initBackgroundPattern(); 
+            initBackgroundPattern();
             initThree();
-            
-            animateBackgroundPattern(); 
-            animateThreeScene(); 
+            animateBackgroundPattern();
+            animateThreeScene();
         });
 
+    </script>
+
+    <script>
+        // Terminal System
+        const terminalWindow = document.getElementById('terminal-window');
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+        let terminalActive = false;
+        let discoveredFragments = new Set();
+
+        // Easter Egg Activation
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + Alt + T to toggle terminal
+            if (e.ctrlKey && e.altKey && e.key === 't') {
+                terminalActive = !terminalActive;
+                terminalWindow.classList.toggle('active');
+                if (terminalActive) {
+                    terminalInput.focus();
+                    writeToTerminal('> System initialized\n> Type "help" for commands');
+                }
+            }
+        });
+
+        // Terminal Commands
+        const commands = {
+            help: () => {
+                writeToTerminal('Available commands:\n' +
+                    'help - Show this help message\n' +
+                    'scan - Scan for gas signatures\n' +
+                    'clear - Clear terminal\n' +
+                    'about - About Brap.Fun\n' +
+                    'connect - Attempt connection to the network\n' +
+                    'speed [value] - Adjust rotation speed (0.01-0.2)\n' +
+                    'color [scheme] - Change color scheme (default/neon/retro/thermal)\n' +
+                    'particles - Toggle particle effects\n' +
+                    'glitch - Toggle glitch mode\n' +
+                    'reset - Reset all visual effects');
+            },
+            scan: () => {
+                writeToTerminal('Scanning for gas signatures...');
+                setTimeout(() => {
+                    const fragments = document.querySelectorAll('.data-fragment');
+                    fragments.forEach(fragment => {
+                        if (!discoveredFragments.has(fragment.id)) {
+                            fragment.classList.add('visible');
+                            discoveredFragments.add(fragment.id);
+                            writeToTerminal(`> Signature discovered: ${fragment.dataset.id}`);
+                        }
+                    });
+                }, 1000);
+            },
+            clear: () => {
+                terminalOutput.innerHTML = '';
+            },
+            about: () => {
+                writeToTerminal('Brap.Fun System Information:\n' +
+                    'Version: 0.1.0\n' +
+                    'Status: Connected to Network\n' +
+                    'Protocol: Silent but Deadly\n' +
+                    'Security: Level 3\n' +
+                    'Signatures Discovered: ' + discoveredFragments.size);
+            },
+            connect: () => {
+                writeToTerminal('Attempting connection to network...');
+                setTimeout(() => {
+                    writeToTerminal('Connection established.\n' +
+                        'Welcome to Brap.Fun\n' +
+                        'Remember: "Efficiency is key in digital flatulence."');
+                }, 2000);
+            },
+            speed: (value) => {
+                const speed = parseFloat(value);
+                if (isNaN(speed) || speed < 0.01 || speed > 0.2) {
+                    writeToTerminal('Invalid speed value. Use a number between 0.01 and 0.2');
+                    return;
+                }
+                sceneEffects.rotationSpeed = speed;
+                writeToTerminal(`Rotation speed adjusted to ${speed}`);
+            },
+            color: (scheme) => {
+                if (!colorSchemes[scheme]) {
+                    writeToTerminal('Invalid color scheme. Available: default, neon, retro, thermal');
+                    return;
+                }
+
+                sceneEffects.colorScheme = scheme;
+                const currentScheme = colorSchemes[scheme];
+
+                // Update all sphere materials
+                spheres.forEach(sphere => {
+                    if (!sceneEffects.originalMaterials.has(sphere)) {
+                        sceneEffects.originalMaterials.set(sphere, sphere.material.clone());
+                    }
+
+                    // Check if this is a project sphere
+                    const isProjectSphere = projectSpheres.includes(sphere);
+                    const isProjectsSection = (currentSection === 'projects');
+
+                    if (sphere === selectedProjectSphere) {
+                        // Selected project sphere
+                        sphere.material.color.setHex(currentScheme.highlightColor);
+                        sphere.material.emissive.setHex(currentScheme.highlightEmissive);
+                        sphere.material.emissiveIntensity = 0.7;
+                    } else if (isProjectSphere && isProjectsSection) {
+                        // Project sphere in projects section
+                        sphere.material.color.setHex(currentScheme.highlightColor);
+                        sphere.material.emissive.setHex(currentScheme.highlightEmissive);
+                        sphere.material.emissiveIntensity = 0.5;
+                    } else {
+                        // Regular sphere or project sphere in other sections
+                        sphere.material.color.setHex(currentScheme.nodeColor);
+                        sphere.material.emissive.setHex(currentScheme.nodeEmissive);
+                        sphere.material.emissiveIntensity = 0;
+                    }
+                });
+
+                // Update scene fog
+                scene.fog.color.setHex(currentScheme.fogColor);
+                scene.fog.density = currentScheme.fogDensity;
+
+                // Update connector line color
+                if (connectorLine) {
+                    connectorLine.style.stroke = currentScheme.connectorColor;
+                }
+
+                // Update UI elements
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.style.color = currentScheme.connectorColor;
+                });
+
+                document.querySelectorAll('.section-content h2').forEach(heading => {
+                    heading.style.color = currentScheme.connectorColor;
+                });
+
+                // Update terminal text color
+                terminalOutput.style.color = currentScheme.connectorColor;
+                terminalInput.style.color = currentScheme.connectorColor;
+
+                writeToTerminal(`Color scheme changed to ${scheme}`);
+            },
+            particles: () => {
+                sceneEffects.particleEffect = !sceneEffects.particleEffect;
+                if (sceneEffects.particleEffect) {
+                    writeToTerminal('Particle effects enabled. Gas signatures are now more visible.');
+                    spheres.forEach(sphere => {
+                        if (!sceneEffects.originalMaterials.has(sphere)) {
+                            sceneEffects.originalMaterials.set(sphere, sphere.material.clone());
+                        }
+                        sphere.material.emissiveIntensity = 0.5;
+                        sphere.material.opacity = 0.8;
+                    });
+                } else {
+                    writeToTerminal('Particle effects disabled.');
+                    spheres.forEach(sphere => {
+                        const originalMaterial = sceneEffects.originalMaterials.get(sphere);
+                        if (originalMaterial) {
+                            sphere.material = originalMaterial;
+                        }
+                    });
+                }
+            },
+            glitch: () => {
+                sceneEffects.glitchMode = !sceneEffects.glitchMode;
+                if (sceneEffects.glitchMode) {
+                    writeToTerminal('Glitch mode enabled. Reality is becoming unstable...');
+                    // Increase fog density while maintaining color
+                    scene.fog.density = colorSchemes[sceneEffects.colorScheme].fogDensity * 2;
+                    spheres.forEach(sphere => {
+                        sphere.position.x += (Math.random() - 0.5) * 0.1;
+                        sphere.position.z += (Math.random() - 0.5) * 0.1;
+                    });
+                } else {
+                    writeToTerminal('Glitch mode disabled. Reality stabilized.');
+                    // Restore fog density while maintaining color
+                    scene.fog.density = colorSchemes[sceneEffects.colorScheme].fogDensity;
+                    spheres.forEach(sphere => {
+                        const t = (spheres.indexOf(sphere) / numSpheresPerHelix) * turns * Math.PI * 2;
+                        const radius = 2;
+                        sphere.position.x = radius * Math.cos(t);
+                        sphere.position.z = radius * Math.sin(t);
+                    });
+                }
+            },
+            reset: () => {
+                sceneEffects = {
+                    rotationSpeed: 0.03,
+                    colorScheme: 'default',
+                    particleEffect: false,
+                    glitchMode: false,
+                    originalMaterials: new Map(),
+                    originalFogColor: 0xF4F4F5,
+                    originalFogDensity: 0.045
+                };
+
+                // Reset all spheres to default state
+                spheres.forEach(sphere => {
+                    const isProjectSphere = projectSpheres.includes(sphere);
+                    const isProjectsSection = (currentSection === 'projects');
+
+                    if (sphere === selectedProjectSphere) {
+                        sphere.material = highlightedProjectMaterial.clone();
+                        sphere.material.emissiveIntensity = 0.7;
+                    } else if (isProjectSphere && isProjectsSection) {
+                        sphere.material = highlightedProjectMaterial.clone();
+                        sphere.material.emissiveIntensity = 0.5;
+                    } else {
+                        sphere.material = glassMaterial.clone();
+                        sphere.material.emissiveIntensity = 0;
+                    }
+                });
+
+                // Restore scene fog
+                scene.fog.color.setHex(sceneEffects.originalFogColor);
+                scene.fog.density = sceneEffects.originalFogDensity;
+
+                // Restore connector line
+                if (connectorLine) {
+                    connectorLine.style.stroke = '#009B77';
+                }
+
+                // Restore UI elements
+                document.querySelectorAll('nav a').forEach(link => {
+                    link.style.color = '#009B77';
+                });
+
+                document.querySelectorAll('.section-content h2').forEach(heading => {
+                    heading.style.color = '#009B77';
+                });
+
+                // Restore terminal colors
+                terminalOutput.style.color = '#009B77';
+                terminalInput.style.color = '#009B77';
+
+                writeToTerminal('All visual effects reset to default.');
+            }
+        };
+
+        function writeToTerminal(text) {
+            const line = document.createElement('div');
+            line.textContent = text;
+            terminalOutput.appendChild(line);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        terminalInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const input = terminalInput.value.trim();
+                const [command, ...args] = input.split(' ');
+                writeToTerminal('> ' + input);
+                
+                if (commands[command]) {
+                    commands[command](...args);
+                } else {
+                    writeToTerminal('Command not recognized. Type "help" for available commands.');
+                }
+                
+                terminalInput.value = '';
+            }
+        });
+
+        // Data Fragment System
+        const fragmentData = [
+            { id: 'SIG_001', text: 'Efficiency is key in digital flatulence.', x: 15, y: 20 },
+            { id: 'SIG_002', text: 'Protocol 7: The Silent but Deadly Protocol', x: 85, y: 40 },
+            { id: 'SIG_003', text: 'Error: Gas Leak Detected', x: 45, y: 60 },
+            { id: 'SIG_004', text: 'Connection established. Welcome to the Digital Wind.', x: 75, y: 80 },
+            { id: 'SIG_005', text: 'Remember: A good brap is like a good algorithm - efficient and elegant.', x: 25, y: 90 }
+        ];
+
+        function createDataFragments() {
+            const container = document.getElementById('data-fragments-container');
+            fragmentData.forEach(fragment => {
+                const element = document.createElement('div');
+                element.id = fragment.id;
+                element.className = 'data-fragment';
+                element.textContent = fragment.text;
+                element.style.left = `${fragment.x}%`;
+                element.style.top = `${fragment.y}%`;
+                element.dataset.id = fragment.id;
+                container.appendChild(element);
+            });
+        }
+
+        // Initialize data fragments
+        createDataFragments();
+
+        // Add glitch effect to random elements
+        function addGlitchEffect() {
+            const elements = document.querySelectorAll('h2, .section-content p');
+            setInterval(() => {
+                const randomElement = elements[Math.floor(Math.random() * elements.length)];
+                randomElement.classList.add('glitch-text');
+                setTimeout(() => {
+                    randomElement.classList.remove('glitch-text');
+                }, 1000);
+            }, 5000);
+        }
+
+        // Initialize glitch effect
+        addGlitchEffect();
+
+        // Add hidden clickable areas
+        function addHiddenAreas() {
+            const areas = [
+                { x: 10, y: 10, width: 50, height: 50 },
+                { x: 60, y: 30, width: 30, height: 30 },
+                { x: 20, y: 70, width: 40, height: 40 }
+            ];
+
+            areas.forEach(area => {
+                const element = document.createElement('div');
+                element.className = 'hidden-element';
+                element.style.position = 'fixed';
+                element.style.left = `${area.x}%`;
+                element.style.top = `${area.y}%`;
+                element.style.width = `${area.width}px`;
+                element.style.height = `${area.height}px`;
+                element.style.zIndex = '100';
+                
+                element.addEventListener('click', () => {
+                    writeToTerminal('> Hidden area discovered');
+                    const fragment = fragmentData[Math.floor(Math.random() * fragmentData.length)];
+                    if (!discoveredFragments.has(fragment.id)) {
+                        discoveredFragments.add(fragment.id);
+                        writeToTerminal(`> New fragment discovered: ${fragment.id}`);
+                    }
+                });
+
+                document.body.appendChild(element);
+            });
+        }
+
+        // Initialize hidden areas
+        addHiddenAreas();
+
+        // Add subtle background effects
+        function addBackgroundEffects() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '-1';
+            document.body.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            function draw() {
+                ctx.clearRect(0, 0, width, height);
+                ctx.fillStyle = 'rgba(0, 155, 119, 0.05)';
+                ctx.fillRect(0, 0, width, height);
+
+                // Draw subtle grid
+                ctx.strokeStyle = 'rgba(0, 155, 119, 0.1)';
+                ctx.lineWidth = 0.5;
+                for (let i = 0; i < width; i += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, 0);
+                    ctx.lineTo(i, height);
+                    ctx.stroke();
+                }
+                for (let i = 0; i < height; i += 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, i);
+                    ctx.lineTo(width, i);
+                    ctx.stroke();
+                }
+
+                requestAnimationFrame(draw);
+            }
+
+            draw();
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+        }
+
+        // Initialize background effects
+        addBackgroundEffects();
+
+        // Floating Text System
+        const floatingTexts = [
+            'try: scan',
+            'try: about',
+            'try: connect',
+            'try: help',
+            'Brap.Fun - Where Digital Gas Meets Reality',
+            'Protocol 7: The Silent but Deadly Protocol',
+            'Error: Gas Leak Detected',
+            'Connection Established. Welcome to the Digital Wind.',
+            'Remember: A good brap is like a good algorithm - efficient and elegant.'
+        ];
+
+        function createFloatingText() {
+            const text = document.createElement('div');
+            text.className = 'floating-text';
+            text.textContent = floatingTexts[Math.floor(Math.random() * floatingTexts.length)];
+            
+            // Random position in 3D space
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const z = Math.random() * 100;
+            
+            text.style.left = `${x}%`;
+            text.style.top = `${y}%`;
+            text.style.transform = `translateZ(${z}px)`;
+            
+            document.body.appendChild(text);
+            
+            // Fade in
+            setTimeout(() => {
+                text.classList.add('visible');
+            }, 100);
+            
+            // Fade out and remove
+            setTimeout(() => {
+                text.classList.add('fade-out');
+                setTimeout(() => {
+                    text.remove();
+                }, 2000);
+            }, 5000);
+        }
+
+        // Create floating text periodically
+        setInterval(createFloatingText, 8000);
     </script>
 </body>
 </html>
