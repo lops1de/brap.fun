@@ -6,9 +6,12 @@
     <title>Personal Site</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Add classic tech fonts -->
+    <link href="https://fonts.cdnfonts.com/css/bank-gothic" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/eurostile" rel="stylesheet">
     <style>
         body {
-            font-family: 'Inter', 'Roboto Mono', monospace;
+            font-family: 'Eurostile', 'Bank Gothic', sans-serif;
             background-color: #F4F4F5; 
             color: #27272A; 
             overflow: hidden;
@@ -48,51 +51,73 @@
         }
         nav {
             pointer-events: auto; 
-            background-color: rgba(255, 255, 255, 0.65); 
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.75));
             backdrop-filter: blur(6px);
             padding: 0.75rem 1.5rem;
-            border: 1px solid #D4D4D8; 
-            border-radius: 0px;
+            border: 1px solid rgba(0, 155, 119, 0.2);
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         nav a {
-            color: #52525B; 
+            color: #009B77;
             text-decoration: none;
             margin-right: 1.5rem;
             font-size: 0.9rem;
-            letter-spacing: 0.05em;
-            transition: color 0.3s ease, transform 0.3s ease;
-            display: inline-block;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-family: 'Bank Gothic', sans-serif;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.25rem 0;
         }
         nav a:last-child {
             margin-right: 0;
         }
         nav a:hover, nav a.active {
-            color: #09090B; 
-            transform: translateY(-2px);
+            color: #006B54;
+            transform: translateY(-1px);
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, #009B77, #00C9A7);
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after, nav a.active::after {
+            width: 100%;
         }
         .section-content { /* General text content box */
             pointer-events: auto;
             max-width: 400px;
-            background-color: rgba(240, 240, 245, 0.75);
+            background: linear-gradient(to bottom, rgba(240, 240, 245, 0.85), rgba(240, 240, 245, 0.75));
             backdrop-filter: blur(8px);
             padding: 1.5rem;
-            border: 1px solid #C0C0C8;
-            border-radius: 0px;
+            border: 1px solid rgba(0, 155, 119, 0.2);
+            border-radius: 4px;
             align-self: flex-end; 
             margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .section-content h2 {
             font-size: 1.5rem;
-            color: #18181B;
+            color: #009B77;
             margin-bottom: 0.75rem;
             font-weight: 500;
-            border-bottom: 1px solid #A1A1AA;
+            font-family: 'Bank Gothic', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid rgba(0, 155, 119, 0.3);
             padding-bottom: 0.5rem;
         }
         .section-content p {
             font-size: 0.9rem;
             line-height: 1.6;
             color: #3F3F46;
+            font-family: 'Eurostile', sans-serif;
         }
 
         /* Project Detail Panel */
@@ -102,37 +127,45 @@
             bottom: 2rem;   
             right: 2rem;    
             width: 300px;
-            background-color: rgba(230, 230, 235, 0.85); 
+            background: linear-gradient(to bottom, rgba(230, 230, 235, 0.9), rgba(230, 230, 235, 0.8));
             backdrop-filter: blur(10px);
             padding: 1.5rem;
-            border: 1px solid #B0B0B8;
-            border-radius: 0px;
+            border: 1px solid rgba(0, 155, 119, 0.2);
+            border-radius: 4px;
             z-index: 10; 
             pointer-events: auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         #project-detail-panel h3 {
             font-size: 1.25rem;
-            color: #09090B;
+            color: #009B77;
             margin-bottom: 0.5rem;
+            font-family: 'Bank Gothic', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         #project-detail-panel p {
             font-size: 0.85rem;
             color: #3F3F46;
             margin-bottom: 1rem;
+            font-family: 'Eurostile', sans-serif;
         }
         #project-detail-panel button {
-            background-color: #52525B;
+            background: linear-gradient(to bottom, #009B77, #006B54);
             color: #F4F4F5;
             border: none;
             padding: 0.5rem 1rem;
             font-size: 0.8rem;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            border-radius: 0px;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            font-family: 'Bank Gothic', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         #project-detail-panel button:hover {
-            background-color: #27272A;
+            background: linear-gradient(to bottom, #006B54, #004D3D);
+            transform: translateY(-1px);
         }
 
         /* SVG for drawing lines */
@@ -146,7 +179,7 @@
             pointer-events:none;
         }
         #project-connector-line {
-            stroke: #FF6B6B; /* Red-orange color for the line to match highlight */
+            stroke: #009B77;
             stroke-width: 1.5px;
             stroke-dasharray: 4 2; 
         }
@@ -182,9 +215,108 @@
                 margin: 0 auto; 
             }
         }
+
+        /* Web 2.0 Entrypoint Styles */
+        @keyframes entrypoint-fade-out {
+            to { opacity: 0; pointer-events: none; }
+        }
+        @keyframes entrypoint-fade-in {
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); }
+            70% { transform: scale(1); }
+            100% { transform: scale(0.95); }
+        }
+        @keyframes textGlow {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        @keyframes loadingDots {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+            100% { content: '.'; }
+        }
+        #entrypoint-overlay {
+            background: linear-gradient(135deg, rgba(244, 244, 245, 0.95) 0%, rgba(230, 245, 242, 0.95) 100%);
+            transition: opacity 0.5s;
+        }
+        #entrypoint-overlay.fade-out {
+            animation: entrypoint-fade-out 1s forwards;
+            animation-delay: 0.5s;
+        }
+        #entrypoint-container {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(0, 155, 119, 0.15),
+                       inset 0 1px 1px rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        #entrypoint-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.3) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+        }
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 100%; }
+            100% { left: 100%; }
+        }
+        .logo-placeholder {
+            background: linear-gradient(135deg, rgba(0, 155, 119, 0.1) 0%, rgba(0, 155, 119, 0.2) 100%);
+            border: 2px solid rgba(0, 155, 119, 0.4);
+        }
+        .logo-inner {
+            background: linear-gradient(135deg, rgba(0, 155, 119, 0.4) 0%, rgba(0, 155, 119, 0.6) 100%);
+        }
+        #entrypoint-title {
+            animation: textGlow 2s infinite;
+        }
+        #entrypoint-status::after {
+            content: '.';
+            animation: loadingDots 1.5s infinite;
+        }
+        .progress-bar-container {
+            background: linear-gradient(to bottom, rgba(0, 155, 119, 0.1), rgba(0, 155, 119, 0.05));
+            border: 1px solid rgba(0, 155, 119, 0.2);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .progress-bar {
+            background: linear-gradient(to right, #009B77, #00C9A7);
+            box-shadow: 0 0 10px rgba(0, 155, 119, 0.5);
+        }
     </style>
 </head>
 <body>
+    <!-- ENTRYPOINT OVERLAY (LOADING SCREEN) -->
+    <canvas id="entrypoint-bg-canvas"></canvas>
+    <div id="entrypoint-overlay" style="display: flex; align-items: center; justify-content: center; position: fixed; z-index: 1000; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(244, 244, 245, 0.95);">
+        <div id="entrypoint-container" style="text-align: center; background: rgba(255,255,255,0.35); box-shadow: 0 8px 32px 0 rgba(0, 155, 119, 0.12); border: 1px solid rgba(0, 155, 119, 0.18); border-radius: 1rem; padding: 2.5rem 2.5rem; min-width: 320px; max-width: 90vw; font-family: 'Inter', 'Roboto Mono', monospace;">
+            <div class="logo-placeholder" style="width: 80px; height: 80px; border: 2px solid rgba(0, 155, 119, 0.4); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; justify-content: center; align-items: center; animation: pulse 2.5s infinite ease-in-out;">
+                <div class="logo-inner" style="width: 40px; height: 40px; background-color: rgba(0, 155, 119, 0.3); border-radius: 50%;"></div>
+            </div>
+            <div id="entrypoint-title" style="font-size: 1.5rem; font-weight: 500; color: #009B77; margin-bottom: 0.5rem;">Initializing Interface</div>
+            <div id="entrypoint-status" style="font-size: 0.95rem; color: #009B77; opacity: 0.85; min-height: 1.2em; margin-bottom: 1.5rem;">Establishing secure link...</div>
+            <div class="progress-bar-container" style="width: 80%; height: 6px; background-color: rgba(0, 155, 119, 0.12); border-radius: 3px; margin: 0 auto; overflow: hidden;">
+                <div class="progress-bar" id="entrypoint-progress" style="width: 0%; height: 100%; background-color: #009B77; border-radius: 3px; transition: width 0.5s ease-out;"></div>
+            </div>
+        </div>
+    </div>
     <canvas id="background-pattern-canvas"></canvas> <canvas id="three-canvas"></canvas>
     <svg id="project-line-svg">
         <line id="project-connector-line" x1="0" y1="0" x2="0" y2="0" />
@@ -205,6 +337,157 @@
         <p id="project-panel-description">Project description goes here...</p>
         <button id="close-project-panel">Close</button>
     </div>
+
+    <script>
+    // --- ENTRYPOINT PARTICLE BACKGROUND (TEAL) ---
+    const entrypointCanvas = document.getElementById('entrypoint-bg-canvas');
+    const entrypointCtx = entrypointCanvas.getContext('2d');
+    let entrypointParticles = [];
+    const entrypointNumParticles = 70;
+    function resizeEntrypointCanvas() {
+        entrypointCanvas.width = window.innerWidth;
+        entrypointCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeEntrypointCanvas);
+    resizeEntrypointCanvas();
+    class EntrypointParticle {
+        constructor() {
+            this.x = Math.random() * entrypointCanvas.width;
+            this.y = Math.random() * entrypointCanvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.speedX = (Math.random() * 0.6 - 0.3);
+            this.speedY = (Math.random() * 0.6 - 0.3);
+            this.color = `rgba(0, 155, 119, ${Math.random() * 0.5 + 0.2})`;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x < 0) this.x = entrypointCanvas.width;
+            if (this.x > entrypointCanvas.width) this.x = 0;
+            if (this.y < 0) this.y = entrypointCanvas.height;
+            if (this.y > entrypointCanvas.height) this.y = 0;
+        }
+        draw() {
+            entrypointCtx.fillStyle = this.color;
+            entrypointCtx.beginPath();
+            entrypointCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            entrypointCtx.fill();
+        }
+    }
+    function initEntrypointParticles() {
+        entrypointParticles = [];
+        for (let i = 0; i < entrypointNumParticles; i++) {
+            entrypointParticles.push(new EntrypointParticle());
+        }
+    }
+    initEntrypointParticles();
+    function connectEntrypointParticles() {
+        const maxDistance = 100;
+        for (let i = 0; i < entrypointParticles.length; i++) {
+            for (let j = i; j < entrypointParticles.length; j++) {
+                const dx = entrypointParticles[i].x - entrypointParticles[j].x;
+                const dy = entrypointParticles[i].y - entrypointParticles[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < maxDistance) {
+                    const opacity = 1 - (distance / maxDistance);
+                    entrypointCtx.strokeStyle = `rgba(0, 155, 119, ${opacity * 0.25})`;
+                    entrypointCtx.lineWidth = 0.5;
+                    entrypointCtx.beginPath();
+                    entrypointCtx.moveTo(entrypointParticles[i].x, entrypointParticles[i].y);
+                    entrypointCtx.lineTo(entrypointParticles[j].x, entrypointParticles[j].y);
+                    entrypointCtx.stroke();
+                }
+            }
+        }
+    }
+    let entrypointActive = true;
+    function animateEntrypointCanvas() {
+        if (!entrypointActive) return;
+        entrypointCtx.clearRect(0, 0, entrypointCanvas.width, entrypointCanvas.height);
+        entrypointParticles.forEach(particle => {
+            particle.update();
+            particle.draw();
+        });
+        connectEntrypointParticles();
+        requestAnimationFrame(animateEntrypointCanvas);
+    }
+    animateEntrypointCanvas();
+    // --- ENTRYPOINT PROGRESS & STATUS ---
+    const entrypointTitle = document.getElementById('entrypoint-title');
+    const entrypointStatus = document.getElementById('entrypoint-status');
+    const entrypointProgress = document.getElementById('entrypoint-progress');
+    const entrypointOverlay = document.getElementById('entrypoint-overlay');
+    const entrypointMessages = [
+        "Initializing neural interface",
+        "Establishing secure connection",
+        "Verifying digital signature",
+        "Accessing aero-interface",
+        "Compiling reality matrix",
+        "Connection imminent"
+    ];
+    let entrypointMsgIdx = 0;
+    let entrypointProgressVal = 0;
+    const entrypointInterval = setInterval(() => {
+        if (entrypointMsgIdx < entrypointMessages.length) {
+            entrypointStatus.textContent = entrypointMessages[entrypointMsgIdx];
+            entrypointMsgIdx++;
+            entrypointProgressVal = Math.min(100, entrypointProgressVal + (100 / entrypointMessages.length));
+            entrypointProgress.style.width = `${entrypointProgressVal}%`;
+        } else {
+            entrypointTitle.textContent = "Connected";
+            entrypointStatus.textContent = "Welcome to the digital horizon.";
+            entrypointProgress.style.width = `100%`;
+            clearInterval(entrypointInterval);
+            entrypointOverlay.classList.add('fade-out');
+            setTimeout(() => {
+                entrypointActive = false;
+                entrypointOverlay.style.display = 'none';
+                entrypointCanvas.style.display = 'none';
+            }, 1500);
+        }
+    }, 800);
+
+    // Add a classic loading animation
+    function createLoadingAnimation() {
+        const loadingContainer = document.createElement('div');
+        loadingContainer.style.cssText = `
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 4px;
+        `;
+        
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.style.cssText = `
+                width: 8px;
+                height: 8px;
+                background: #009B77;
+                border-radius: 50%;
+                animation: bounce 0.6s infinite;
+                animation-delay: ${i * 0.2}s;
+            `;
+            loadingContainer.appendChild(dot);
+        }
+        
+        document.getElementById('entrypoint-container').appendChild(loadingContainer);
+    }
+
+    // Add bounce animation for loading dots
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize loading animation
+    createLoadingAnimation();
+    </script>
 
     <script>
         // --- BACKGROUND PATTERN SETUP ---
