@@ -93,7 +93,7 @@
         .section-content { /* General text content box */
             pointer-events: auto;
             max-width: 400px;
-            background: linear-gradient(to bottom, rgba(240, 240, 245, 0.85), rgba(240, 240, 245, 0.75));
+            background: linear-gradient(135deg, rgba(240, 240, 245, 0.85), rgba(240, 240, 245, 0.75));
             backdrop-filter: blur(8px);
             padding: 1.5rem;
             border: 1px solid rgba(0, 155, 119, 0.2);
@@ -101,6 +101,27 @@
             align-self: flex-end; 
             margin-bottom: 1rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .section-content::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(0, 155, 119, 0.2), rgba(0, 201, 167, 0.2));
+            border-radius: 6px;
+            z-index: -1;
+            transform: translateZ(-10px);
+            filter: blur(4px);
+        }
+        .section-content:hover {
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(20px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
         .section-content h2 {
             font-size: 1.5rem;
@@ -112,14 +133,62 @@
             letter-spacing: 0.05em;
             border-bottom: 1px solid rgba(0, 155, 119, 0.3);
             padding-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .section-content h2::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                rgba(0, 155, 119, 0) 0%,
+                rgba(0, 155, 119, 0.5) 50%,
+                rgba(0, 155, 119, 0) 100%
+            );
+            animation: scanline 2s linear infinite;
+        }
+        @keyframes scanline {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
         }
         .section-content p {
             font-size: 0.9rem;
             line-height: 1.6;
             color: #3F3F46;
             font-family: 'Eurostile', sans-serif;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
-
+        .section-content::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg,
+                rgba(0, 155, 119, 0.1) 0%,
+                rgba(0, 155, 119, 0) 50%,
+                rgba(0, 155, 119, 0.1) 100%
+            );
+            pointer-events: none;
+            animation: glow 3s ease-in-out infinite;
+        }
+        @keyframes glow {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
         /* Project Detail Panel */
         #project-detail-panel {
             display: none; 
@@ -127,7 +196,7 @@
             bottom: 2rem;   
             right: 2rem;    
             width: 300px;
-            background: linear-gradient(to bottom, rgba(230, 230, 235, 0.9), rgba(230, 230, 235, 0.8));
+            background: linear-gradient(135deg, rgba(230, 230, 235, 0.9), rgba(230, 230, 235, 0.8));
             backdrop-filter: blur(10px);
             padding: 1.5rem;
             border: 1px solid rgba(0, 155, 119, 0.2);
@@ -135,6 +204,57 @@
             z-index: 10; 
             pointer-events: auto;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(5deg) rotateY(5deg);
+            transition: all 0.3s ease;
+        }
+        #project-detail-panel::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+            pointer-events: none;
+            animation: noise 0.5s steps(2) infinite;
+        }
+        @keyframes noise {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            10% {
+                transform: translate(-5%, -5%);
+            }
+            20% {
+                transform: translate(-10%, 5%);
+            }
+            30% {
+                transform: translate(5%, -10%);
+            }
+            40% {
+                transform: translate(-5%, 15%);
+            }
+            50% {
+                transform: translate(-10%, 5%);
+            }
+            60% {
+                transform: translate(15%, 0);
+            }
+            70% {
+                transform: translate(0, 10%);
+            }
+            80% {
+                transform: translate(3%, 15%);
+            }
+            90% {
+                transform: translate(-10%, 10%);
+            }
+        }
+        #project-detail-panel:hover {
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(20px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
         #project-detail-panel h3 {
             font-size: 1.25rem;
@@ -143,12 +263,14 @@
             font-family: 'Bank Gothic', sans-serif;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         #project-detail-panel p {
             font-size: 0.85rem;
             color: #3F3F46;
             margin-bottom: 1rem;
             font-family: 'Eurostile', sans-serif;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
         #project-detail-panel button {
             background: linear-gradient(to bottom, #009B77, #006B54);
@@ -162,10 +284,13 @@
             font-family: 'Bank Gothic', sans-serif;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            transform: translateZ(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         #project-detail-panel button:hover {
             background: linear-gradient(to bottom, #006B54, #004D3D);
-            transform: translateY(-1px);
+            transform: translateZ(10px) translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         /* SVG for drawing lines */
@@ -403,7 +528,7 @@
             <a href="#" data-section="home">HOME</a>
             <a href="#" data-section="about">ABOUT</a>
             <a href="#" data-section="projects">PROJECTS</a>
-            <a href="#" data-section="contact">CONTACT</a>
+            <a href="#" data-section="blog">LOGS</a>
         </nav>
         <div id="section-display" class="section-content">
             </div>
@@ -425,154 +550,165 @@
     <div id="data-fragments-container"></div>
 
     <script>
-    // --- ENTRYPOINT PARTICLE BACKGROUND (TEAL) ---
-    const entrypointCanvas = document.getElementById('entrypoint-bg-canvas');
-    const entrypointCtx = entrypointCanvas.getContext('2d');
-    let entrypointParticles = [];
-    const entrypointNumParticles = 70;
-    function resizeEntrypointCanvas() {
-        entrypointCanvas.width = window.innerWidth;
-        entrypointCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeEntrypointCanvas);
-    resizeEntrypointCanvas();
-    class EntrypointParticle {
-        constructor() {
-            this.x = Math.random() * entrypointCanvas.width;
-            this.y = Math.random() * entrypointCanvas.height;
-            this.size = Math.random() * 2 + 0.5;
-            this.speedX = (Math.random() * 0.6 - 0.3);
-            this.speedY = (Math.random() * 0.6 - 0.3);
-            this.color = `rgba(0, 155, 119, ${Math.random() * 0.5 + 0.2})`;
+        // Check if we're coming from blog
+        if (sessionStorage.getItem('fromBlog') === 'true') {
+            // Remove the flag
+            sessionStorage.removeItem('fromBlog');
+            // Hide the entrypoint overlay immediately
+            const entrypointOverlay = document.getElementById('entrypoint-overlay');
+            entrypointOverlay.style.display = 'none';
+            entrypointCanvas.style.display = 'none';
+            entrypointActive = false;
         }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x < 0) this.x = entrypointCanvas.width;
-            if (this.x > entrypointCanvas.width) this.x = 0;
-            if (this.y < 0) this.y = entrypointCanvas.height;
-            if (this.y > entrypointCanvas.height) this.y = 0;
+
+        // --- ENTRYPOINT PARTICLE BACKGROUND (TEAL) ---
+        const entrypointCanvas = document.getElementById('entrypoint-bg-canvas');
+        const entrypointCtx = entrypointCanvas.getContext('2d');
+        let entrypointParticles = [];
+        const entrypointNumParticles = 70;
+        function resizeEntrypointCanvas() {
+            entrypointCanvas.width = window.innerWidth;
+            entrypointCanvas.height = window.innerHeight;
         }
-        draw() {
-            entrypointCtx.fillStyle = this.color;
-            entrypointCtx.beginPath();
-            entrypointCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            entrypointCtx.fill();
+        window.addEventListener('resize', resizeEntrypointCanvas);
+        resizeEntrypointCanvas();
+        class EntrypointParticle {
+            constructor() {
+                this.x = Math.random() * entrypointCanvas.width;
+                this.y = Math.random() * entrypointCanvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() * 0.6 - 0.3);
+                this.speedY = (Math.random() * 0.6 - 0.3);
+                this.color = `rgba(0, 155, 119, ${Math.random() * 0.5 + 0.2})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0) this.x = entrypointCanvas.width;
+                if (this.x > entrypointCanvas.width) this.x = 0;
+                if (this.y < 0) this.y = entrypointCanvas.height;
+                if (this.y > entrypointCanvas.height) this.y = 0;
+            }
+            draw() {
+                entrypointCtx.fillStyle = this.color;
+                entrypointCtx.beginPath();
+                entrypointCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                entrypointCtx.fill();
+            }
         }
-    }
-    function initEntrypointParticles() {
-        entrypointParticles = [];
-        for (let i = 0; i < entrypointNumParticles; i++) {
-            entrypointParticles.push(new EntrypointParticle());
+        function initEntrypointParticles() {
+            entrypointParticles = [];
+            for (let i = 0; i < entrypointNumParticles; i++) {
+                entrypointParticles.push(new EntrypointParticle());
+            }
         }
-    }
-    initEntrypointParticles();
-    function connectEntrypointParticles() {
-        const maxDistance = 100;
-        for (let i = 0; i < entrypointParticles.length; i++) {
-            for (let j = i; j < entrypointParticles.length; j++) {
-                const dx = entrypointParticles[i].x - entrypointParticles[j].x;
-                const dy = entrypointParticles[i].y - entrypointParticles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < maxDistance) {
-                    const opacity = 1 - (distance / maxDistance);
-                    entrypointCtx.strokeStyle = `rgba(0, 155, 119, ${opacity * 0.25})`;
-                    entrypointCtx.lineWidth = 0.5;
-                    entrypointCtx.beginPath();
-                    entrypointCtx.moveTo(entrypointParticles[i].x, entrypointParticles[i].y);
-                    entrypointCtx.lineTo(entrypointParticles[j].x, entrypointParticles[j].y);
-                    entrypointCtx.stroke();
+        initEntrypointParticles();
+        function connectEntrypointParticles() {
+            const maxDistance = 100;
+            for (let i = 0; i < entrypointParticles.length; i++) {
+                for (let j = i; j < entrypointParticles.length; j++) {
+                    const dx = entrypointParticles[i].x - entrypointParticles[j].x;
+                    const dy = entrypointParticles[i].y - entrypointParticles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < maxDistance) {
+                        const opacity = 1 - (distance / maxDistance);
+                        entrypointCtx.strokeStyle = `rgba(0, 155, 119, ${opacity * 0.25})`;
+                        entrypointCtx.lineWidth = 0.5;
+                        entrypointCtx.beginPath();
+                        entrypointCtx.moveTo(entrypointParticles[i].x, entrypointParticles[i].y);
+                        entrypointCtx.lineTo(entrypointParticles[j].x, entrypointParticles[j].y);
+                        entrypointCtx.stroke();
+                    }
                 }
             }
         }
-    }
-    let entrypointActive = true;
-    function animateEntrypointCanvas() {
-        if (!entrypointActive) return;
-        entrypointCtx.clearRect(0, 0, entrypointCanvas.width, entrypointCanvas.height);
-        entrypointParticles.forEach(particle => {
-            particle.update();
-            particle.draw();
-        });
-        connectEntrypointParticles();
-        requestAnimationFrame(animateEntrypointCanvas);
-    }
-    animateEntrypointCanvas();
-    // --- ENTRYPOINT PROGRESS & STATUS ---
-    const entrypointTitle = document.getElementById('entrypoint-title');
-    const entrypointStatus = document.getElementById('entrypoint-status');
-    const entrypointProgress = document.getElementById('entrypoint-progress');
-    const entrypointOverlay = document.getElementById('entrypoint-overlay');
-    const entrypointMessages = [
-        "Initializing neural interface",
-        "Establishing secure connection",
-        "Verifying digital signature",
-        "Accessing aero-interface",
-        "Compiling reality matrix",
-        "Connection imminent"
-    ];
-    let entrypointMsgIdx = 0;
-    let entrypointProgressVal = 0;
-    const entrypointInterval = setInterval(() => {
-        if (entrypointMsgIdx < entrypointMessages.length) {
-            entrypointStatus.textContent = entrypointMessages[entrypointMsgIdx];
-            entrypointMsgIdx++;
-            entrypointProgressVal = Math.min(100, entrypointProgressVal + (100 / entrypointMessages.length));
-            entrypointProgress.style.width = `${entrypointProgressVal}%`;
-        } else {
-            entrypointTitle.textContent = "Connected";
-            entrypointStatus.textContent = "Welcome to the digital horizon.";
-            entrypointProgress.style.width = `100%`;
-            clearInterval(entrypointInterval);
-            entrypointOverlay.classList.add('fade-out');
-            setTimeout(() => {
-                entrypointActive = false;
-                entrypointOverlay.style.display = 'none';
-                entrypointCanvas.style.display = 'none';
-            }, 1500);
+        let entrypointActive = true;
+        function animateEntrypointCanvas() {
+            if (!entrypointActive) return;
+            entrypointCtx.clearRect(0, 0, entrypointCanvas.width, entrypointCanvas.height);
+            entrypointParticles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            connectEntrypointParticles();
+            requestAnimationFrame(animateEntrypointCanvas);
         }
-    }, 800);
+        animateEntrypointCanvas();
+        // --- ENTRYPOINT PROGRESS & STATUS ---
+        const entrypointTitle = document.getElementById('entrypoint-title');
+        const entrypointStatus = document.getElementById('entrypoint-status');
+        const entrypointProgress = document.getElementById('entrypoint-progress');
+        const entrypointOverlay = document.getElementById('entrypoint-overlay');
+        const entrypointMessages = [
+            "Initializing neural interface",
+            "Establishing secure connection",
+            "Verifying digital signature",
+            "Accessing aero-interface",
+            "Compiling reality matrix",
+            "Connection imminent"
+        ];
+        let entrypointMsgIdx = 0;
+        let entrypointProgressVal = 0;
+        const entrypointInterval = setInterval(() => {
+            if (entrypointMsgIdx < entrypointMessages.length) {
+                entrypointStatus.textContent = entrypointMessages[entrypointMsgIdx];
+                entrypointMsgIdx++;
+                entrypointProgressVal = Math.min(100, entrypointProgressVal + (100 / entrypointMessages.length));
+                entrypointProgress.style.width = `${entrypointProgressVal}%`;
+            } else {
+                entrypointTitle.textContent = "Connected";
+                entrypointStatus.textContent = "Welcome to the digital horizon.";
+                entrypointProgress.style.width = `100%`;
+                clearInterval(entrypointInterval);
+                entrypointOverlay.classList.add('fade-out');
+                setTimeout(() => {
+                    entrypointActive = false;
+                    entrypointOverlay.style.display = 'none';
+                    entrypointCanvas.style.display = 'none';
+                }, 1500);
+            }
+        }, 800);
 
-    // Add a classic loading animation
-    function createLoadingAnimation() {
-        const loadingContainer = document.createElement('div');
-        loadingContainer.style.cssText = `
-            position: absolute;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 4px;
-        `;
-        
-        for (let i = 0; i < 3; i++) {
-            const dot = document.createElement('div');
-            dot.style.cssText = `
-                width: 8px;
-                height: 8px;
-                background: #009B77;
-                border-radius: 50%;
-                animation: bounce 0.6s infinite;
-                animation-delay: ${i * 0.2}s;
+        // Add a classic loading animation
+        function createLoadingAnimation() {
+            const loadingContainer = document.createElement('div');
+            loadingContainer.style.cssText = `
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                gap: 4px;
             `;
-            loadingContainer.appendChild(dot);
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.style.cssText = `
+                    width: 8px;
+                    height: 8px;
+                    background: #009B77;
+                    border-radius: 50%;
+                    animation: bounce 0.6s infinite;
+                    animation-delay: ${i * 0.2}s;
+                `;
+                loadingContainer.appendChild(dot);
+            }
+            
+            document.getElementById('entrypoint-container').appendChild(loadingContainer);
         }
-        
-        document.getElementById('entrypoint-container').appendChild(loadingContainer);
-    }
 
-    // Add bounce animation for loading dots
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-    `;
-    document.head.appendChild(style);
+        // Add bounce animation for loading dots
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-5px); }
+            }
+        `;
+        document.head.appendChild(style);
 
-    // Initialize loading animation
-    createLoadingAnimation();
+        // Initialize loading animation
+        createLoadingAnimation();
     </script>
 
     <script>
@@ -783,9 +919,9 @@
                 cameraLookAt: new THREE.Vector3(0, 1, 0),
                 bgShift: { x: 0, y: -0.4 } // Increased magnitude
             },
-            contact: {
-                title: "Contact",
-                text: "For inquiries, collaborations, or just to connect, feel free to reach out. (Placeholder for contact form/links).",
+            blog: {
+                title: "Blog",
+                text: "Exploring thoughts, ideas, and digital experiences. Click to enter the blog space.",
                 cameraPos: new THREE.Vector3(-7, -1, 8), 
                 cameraLookAt: new THREE.Vector3(0, -0.5, 0),
                 bgShift: { x: 0.4, y: 0.15 } // Increased magnitude
@@ -1049,7 +1185,9 @@
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const sectionKey = e.target.dataset.section;
-                if (sectionKey && sections[sectionKey]) {
+                if (sectionKey === 'blog') {
+                    window.location.href = 'logs.html';
+                } else if (sectionKey && sections[sectionKey]) {
                     currentSection = sectionKey;
                     targetCameraPos.copy(sections[sectionKey].cameraPos);
                     targetCameraLookAt.copy(sections[sectionKey].cameraLookAt);

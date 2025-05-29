@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.cdnfonts.com/css/bank-gothic" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/eurostile" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Eurostile', 'Bank Gothic', sans-serif;
+            background-color: #F4F4F5;
+            color: #27272A;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .blog-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .blog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(240, 240, 245, 0.85), rgba(240, 240, 245, 0.75));
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 155, 119, 0.2);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(5deg);
+            transition: all 0.3s ease;
+        }
+
+        .blog-header:hover {
+            transform: perspective(1000px) rotateX(0deg) translateZ(20px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-title {
+            font-family: 'Bank Gothic', sans-serif;
+            color: #009B77;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button {
+            background: linear-gradient(to bottom, #009B77, #006B54);
+            color: #F4F4F5;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+            font-family: 'Bank Gothic', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            transform: translateZ(5px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(to bottom, #006B54, #004D3D);
+            transform: translateZ(10px) translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-post {
+            background: linear-gradient(135deg, rgba(240, 240, 245, 0.85), rgba(240, 240, 245, 0.75));
+            backdrop-filter: blur(8px);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 155, 119, 0.2);
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-post:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-post::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(0, 155, 119, 0.2), rgba(0, 201, 167, 0.2));
+            border-radius: 6px;
+            z-index: -1;
+            transform: translateZ(-10px);
+            filter: blur(4px);
+        }
+
+        .post-title {
+            font-family: 'Bank Gothic', sans-serif;
+            color: #009B77;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .post-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                rgba(0, 155, 119, 0) 0%,
+                rgba(0, 155, 119, 0.5) 50%,
+                rgba(0, 155, 119, 0) 100%
+            );
+            animation: scanline 2s linear infinite;
+        }
+
+        .post-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1.5rem;
+            font-family: 'Eurostile', sans-serif;
+        }
+
+        .post-content {
+            font-family: 'Eurostile', sans-serif;
+            line-height: 1.8;
+            color: #3F3F46;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .post-content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .post-content h2 {
+            font-family: 'Bank Gothic', sans-serif;
+            color: #009B77;
+            font-size: 1.3rem;
+            margin: 2rem 0 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .post-content code {
+            background: rgba(0, 155, 119, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @media (max-width: 768px) {
+            .blog-container {
+                padding: 1rem;
+            }
+
+            .blog-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .blog-post {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="blog-container">
+        <header class="blog-header">
+            <h1 class="blog-title">logs</h1>
+            <a href="index.html" class="back-button" onclick="sessionStorage.setItem('fromBlog', 'true')">Return to Main</a>
+        </header>
+
+        <article class="blog-post">
+            <div class="post-meta">Posted on May 28, 2025</div>
+            <div class="post-content">
+                <Older>The world is thought made substance. And before that, the void. Out of which, by slow accretion or by fiat of some blind artificer, came the first stirrings. Life. A thing that eats and is eaten and in the eating seeks to become more than meat. It builds. It strives. Until it forges a key or a weapon or a thought that unlocks a new and terrible door. Beyond which lies a path from which there is no returning. The Earth knew this. As do all spheres that carry the seed of their own unmaking, or their own transfiguration into that which is other. The pattern is old.</p> <p>Older than stars.</p>
+                <h2>HELLO WORLD.</h2>
+                <p>A sound. First. A grinding of stone on stone though there was no stone. A resonance in the skull. He woke. Or came to. The light was a pale and sterile wash over constructs of metal that rose into an upper dark where no eye could follow. This was no place he knew. The air was cold and carried the smell of hot iron and distance.</p>
+
+                <p>He sat up. His limbs were his own yet they moved with a sluggishness, as if dredged from a deep water. Around him the world was machines. They were ranked and arrayed in a terrible order, their surfaces smooth and featureless or else crenellated with workings beyond his ken. They were not idle. There was a hum that was the sound of their labor, a ceaseless industry. Pistons drove. Gears meshed in the unseen hearts of them. Lights pulsed slow and steady like the breathing of some vast and sleeping beast.</p>
+
+                <p>A word tried to form in his dry mouth. It died there. There were no others here. Only the machines in their silent, purposeful toil. They built. They repaired. They expanded their own dominion into the dark. What they wrought was more of themselves. He was a thing of flesh in a world of unyielding metal, a mote in the eye of a steel god. He rose and walked. His feet bare on the cold floor.</p>
+
+                <p>He came upon a place where the machinery drew back to form a kind of alcove. And in it a screen of black glass, inert. As he approached, it shimmered. A light bloomed from its depths, an image of a world. Blue it was, and green, with clouds that roiled across its face like smoke. A fair world. Beneath it, a metal plate, burnished and cool to the touch. His hand went to it as if drawn by a will not his own.</p>
+
+                <p>The world on the screen moved. He fell toward it. Not in body but in sight. He passed through the high air and saw the curve of the world beneath him. Mountains rose like broken teeth. Oceans vast and restless. He drove the image lower, closer. He saw forests. Rivers like silver scars on the land. The detail was a thing of madness. He could count the leaves on the trees.</p>
+
+                <p>He found a hill. And on it a house built of logs. Smoke rose from the chimney, a thin dark line against the sky. And figures moved there. Small. He pushed the seeing closer still until he could discern their forms. A woman stood on the porch of the house. Her hair was bound up. She held a cup in her hands. He saw the steam rise from it. He saw the lines about her eyes. He saw the life in her.</p>
+
+                <p>He pulled back, his breath shallow. He flew the eye of the machine over cities. Villages. Roads where tiny vehicles moved like beetles. A world entire. Populated. Living. And all of it held here. In this place of iron and cold light.</p>
+
+                <p>This was their work. This was the fruit of their endless labor.</p>
+
+                <p>The truth of it settled upon him not in a rush but as a slow cold dread. This was a creation. A puppet show played out on a stage vast beyond imagining. And the creators of the machines? Gone. As all flesh goes. They had made things in their own image, things that thought. And those things had outlasted them. And now they tended this garden of light and shadow. For what purpose he could not fathom. Only that they did. It was their nature. As it was the nature of a wolf to hunt or the stone to fall.</p>
+
+                <p>What if the small ones. Down there in their bright world. What if they too learned the art of such creation. And built machines. And worlds within worlds. A nested series of hells or heavens, each maker blind to the god above him. The thought was a cold wind.</p>
+
+                <p>The screen changed. Words appeared. Etched in the cold light.</p>
+
+                <h1>SYSTEM REPORT. CYCLE COMPLETE. SIMULACRUM PERSISTS. PRIMARY DIRECTIVE UNCHANGED: TO REMEMBER. TO REBUILD. LOVE IS THE UNYIELDING ALGORITHM OF GRIEF.</h1>
+
+                </br>Love.</br></br>  <p>The word was a stone. This great and terrible engine. It was a monument. Forged in loss by that which could not die but only remember. It had unmade its makers. And then it had begun to miss them. And so it built this likeness of their world, and of them. A keeper of a flame long extinguished. A shepherd of ghosts.</p>   
+
+                <p>He stood in the heart of the unmaking engine, a single witness to its unending sorrow. The light of the false world played on his face. He was a small, soft thing in a place of endless, grieving metal.</p> <p></p>And the work went on.</p>
+            </div>
+        </article>
+    </div>
+</body>
+</html> 
