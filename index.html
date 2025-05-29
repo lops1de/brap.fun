@@ -176,14 +176,14 @@
             bottom: 2rem;   
             right: 2rem;    
             width: 300px;
-            background: linear-gradient(135deg, rgba(230, 230, 235, 0.9), rgba(230, 230, 235, 0.8));
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.95), rgba(30, 30, 30, 0.85));
             backdrop-filter: blur(10px);
             padding: 1.5rem;
-            border: 1px solid rgba(0, 155, 119, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.2);
             border-radius: 4px;
             z-index: 10; 
             pointer-events: auto;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transform-style: preserve-3d;
             transform: perspective(1000px) rotateX(5deg) rotateY(5deg);
             transition: all 0.3s ease;
@@ -191,70 +191,39 @@
         #project-detail-panel::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.05;
-            pointer-events: none;
-            animation: noise 0.5s steps(2) infinite;
-        }
-        @keyframes noise {
-            0%, 100% {
-                transform: translate(0, 0);
-            }
-            10% {
-                transform: translate(-5%, -5%);
-            }
-            20% {
-                transform: translate(-10%, 5%);
-            }
-            30% {
-                transform: translate(5%, -10%);
-            }
-            40% {
-                transform: translate(-5%, 15%);
-            }
-            50% {
-                transform: translate(-10%, 5%);
-            }
-            60% {
-                transform: translate(15%, 0);
-            }
-            70% {
-                transform: translate(0, 10%);
-            }
-            80% {
-                transform: translate(3%, 15%);
-            }
-            90% {
-                transform: translate(-10%, 10%);
-            }
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(255, 140, 0, 0.1));
+            border-radius: 6px;
+            z-index: -1;
+            transform: translateZ(-10px);
+            filter: blur(4px);
         }
         #project-detail-panel:hover {
             transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(20px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
         }
         #project-detail-panel h3 {
             font-size: 1.25rem;
-            color: #009B77;
+            color: #FFA500;
             margin-bottom: 0.5rem;
             font-family: 'Bank Gothic', sans-serif;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         #project-detail-panel p {
             font-size: 0.85rem;
-            color: #3F3F46;
+            color: #E0E0E0;
             margin-bottom: 1rem;
             font-family: 'Eurostile', sans-serif;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
         #project-detail-panel button {
-            background: linear-gradient(to bottom, #009B77, #006B54);
-            color: #F4F4F5;
+            background: linear-gradient(to bottom, #FFA500, #FF8C00);
+            color: #1A1A1A;
             border: none;
             padding: 0.5rem 1rem;
             font-size: 0.8rem;
@@ -265,12 +234,12 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             transform: translateZ(5px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         #project-detail-panel button:hover {
-            background: linear-gradient(to bottom, #006B54, #004D3D);
+            background: linear-gradient(to bottom, #FF8C00, #FF6B00);
             transform: translateZ(10px) translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         }
 
         /* SVG for drawing lines */
@@ -1244,6 +1213,10 @@
         }
 
         function openProjectDetails(project, sphere) {
+            // Clear any existing hints before adding new ones
+            const existingHints = projectDetailPanel.querySelectorAll('.project-hint');
+            existingHints.forEach(hint => hint.remove());
+
             currentOpenProject = project.id;
             selectedProjectSphere = sphere;
 
@@ -1255,6 +1228,7 @@
 
             if (project.hint) {
                 const hintElement = document.createElement('div');
+                hintElement.className = 'project-hint';
                 hintElement.style.fontSize = '0.8rem';
                 hintElement.style.color = colorSchemes[sceneEffects.colorScheme].textColor;
                 hintElement.style.marginTop = '1rem';
@@ -1269,6 +1243,10 @@
         }
 
         function closeProjectDetails() {
+            // Clear any existing hints
+            const existingHints = projectDetailPanel.querySelectorAll('.project-hint');
+            existingHints.forEach(hint => hint.remove());
+
             currentOpenProject = null;
             selectedProjectSphere = null;
             if (projectDetailPanel) projectDetailPanel.style.display = 'none'; 
@@ -1730,7 +1708,18 @@
             'Remember: Patterns repeat, but meanings shift.'
         ];
 
+        // Update floating text system to prevent stacking
+        let activeFloatingTexts = new Set();
+
         function createFloatingText() {
+            // Remove old floating texts before creating new ones
+            activeFloatingTexts.forEach(text => {
+                if (text.parentNode) {
+                    text.remove();
+                }
+            });
+            activeFloatingTexts.clear();
+
             const text = document.createElement('div');
             text.className = 'floating-text';
             text.textContent = floatingTexts[Math.floor(Math.random() * floatingTexts.length)];
@@ -1745,6 +1734,7 @@
             text.style.transform = `translateZ(${z}px)`;
             
             document.body.appendChild(text);
+            activeFloatingTexts.add(text);
             
             // Fade in
             setTimeout(() => {
@@ -1755,7 +1745,10 @@
             setTimeout(() => {
                 text.classList.add('fade-out');
                 setTimeout(() => {
-                    text.remove();
+                    if (text.parentNode) {
+                        text.remove();
+                        activeFloatingTexts.delete(text);
+                    }
                 }, 2000);
             }, 5000);
         }
