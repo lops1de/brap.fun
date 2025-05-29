@@ -12,8 +12,8 @@
     <style>
         body {
             font-family: 'Eurostile', 'Bank Gothic', sans-serif;
-            background-color: #F4F4F5; 
-            color: #27272A; 
+            background-color: #1A1A1A; 
+            color: #E0E0E0; 
             overflow: hidden;
             margin: 0;
             padding: 0;
@@ -51,15 +51,14 @@
         }
         nav {
             pointer-events: auto; 
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.75));
+            background: linear-gradient(to bottom, rgba(40, 40, 40, 0.85), rgba(30, 30, 30, 0.75));
             backdrop-filter: blur(6px);
             padding: 0.75rem 1.5rem;
-            border: 1px solid rgba(0, 155, 119, 0.2);
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
         nav a {
-            color: #009B77;
+            color: #FFA500;
             text-decoration: none;
             margin-right: 1.5rem;
             font-size: 0.9rem;
@@ -74,7 +73,7 @@
             margin-right: 0;
         }
         nav a:hover, nav a.active {
-            color: #006B54;
+            color: #FFD700;
             transform: translateY(-1px);
         }
         nav a::after {
@@ -84,27 +83,29 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: linear-gradient(to right, #009B77, #00C9A7);
+            background: linear-gradient(to right, #FFA500, #FFD700);
             transition: width 0.3s ease;
         }
         nav a:hover::after, nav a.active::after {
             width: 100%;
         }
-        .section-content { /* General text content box */
+        .section-content {
             pointer-events: auto;
             max-width: 400px;
-            background: linear-gradient(135deg, rgba(240, 240, 245, 0.85), rgba(240, 240, 245, 0.75));
+            background: linear-gradient(135deg, rgba(40, 40, 40, 0.85), rgba(30, 30, 30, 0.75));
             backdrop-filter: blur(8px);
             padding: 1.5rem;
-            border: 1px solid rgba(0, 155, 119, 0.2);
-            border-radius: 4px;
-            align-self: flex-end; 
+            border: 1px solid rgba(255, 165, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            align-self: flex-end;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transform-style: preserve-3d;
-            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
-            transition: all 0.3s ease;
-            position: relative;
+        }
+        .section-content h2 {
+            color: #FFA500;
+            border-bottom: 1px solid rgba(255, 165, 0, 0.3);
+        }
+        .section-content p {
+            color: #E0E0E0;
         }
         .section-content::before {
             content: '';
@@ -122,19 +123,6 @@
         .section-content:hover {
             transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(20px);
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-        .section-content h2 {
-            font-size: 1.5rem;
-            color: #009B77;
-            margin-bottom: 0.75rem;
-            font-weight: 500;
-            font-family: 'Bank Gothic', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid rgba(0, 155, 119, 0.3);
-            padding-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative;
         }
         .section-content h2::after {
             content: '';
@@ -157,14 +145,6 @@
             100% {
                 transform: translateX(100%);
             }
-        }
-        .section-content p {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: #3F3F46;
-            font-family: 'Eurostile', sans-serif;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            position: relative;
         }
         .section-content::after {
             content: '';
@@ -343,10 +323,17 @@
 
         /* Web 2.0 Entrypoint Styles */
         @keyframes entrypoint-fade-out {
-            to { opacity: 0; pointer-events: none; }
+            to { 
+                opacity: 0; 
+                pointer-events: none;
+                background: rgba(26, 26, 26, 0);
+            }
         }
         @keyframes entrypoint-fade-in {
-            to { opacity: 1; }
+            to { 
+                opacity: 1;
+                background: rgba(26, 26, 26, 0.95);
+            }
         }
         @keyframes pulse {
             0% { transform: scale(0.95); }
@@ -365,65 +352,47 @@
             100% { content: '.'; }
         }
         #entrypoint-overlay {
-            background: linear-gradient(135deg, rgba(244, 244, 245, 0.95) 0%, rgba(230, 245, 242, 0.95) 100%);
-            transition: opacity 0.5s;
-        }
-        #entrypoint-overlay.fade-out {
-            animation: entrypoint-fade-out 1s forwards;
-            animation-delay: 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(26, 26, 26, 0.95);
+            pointer-events: auto;
+            transition: opacity 0.5s, background 0.5s;
         }
         #entrypoint-container {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(0, 155, 119, 0.15),
-                       inset 0 1px 1px rgba(255, 255, 255, 0.5);
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(40, 40, 40, 0.9), rgba(30, 30, 30, 0.7));
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3),
+                       inset 0 1px 1px rgba(255, 165, 0, 0.2);
+            border: 1px solid rgba(255, 165, 0, 0.3);
             border-radius: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-        #entrypoint-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(
-                to right,
-                rgba(255, 255, 255, 0) 0%,
-                rgba(255, 255, 255, 0.3) 50%,
-                rgba(255, 255, 255, 0) 100%
-            );
-            transform: skewX(-25deg);
-            animation: shine 3s infinite;
-        }
-        @keyframes shine {
-            0% { left: -100%; }
-            20% { left: 100%; }
-            100% { left: 100%; }
-        }
-        .logo-placeholder {
-            background: linear-gradient(135deg, rgba(0, 155, 119, 0.1) 0%, rgba(0, 155, 119, 0.2) 100%);
-            border: 2px solid rgba(0, 155, 119, 0.4);
-        }
-        .logo-inner {
-            background: linear-gradient(135deg, rgba(0, 155, 119, 0.4) 0%, rgba(0, 155, 119, 0.6) 100%);
+            padding: 2.5rem 2.5rem;
+            min-width: 320px;
+            max-width: 90vw;
+            font-family: 'Inter', 'Roboto Mono', monospace;
+            pointer-events: auto;
         }
         #entrypoint-title {
-            animation: textGlow 2s infinite;
+            color: #FFA500;
+            text-shadow: 0 0 10px rgba(255, 165, 0, 0.3);
         }
-        #entrypoint-status::after {
-            content: '.';
-            animation: loadingDots 1.5s infinite;
+        #entrypoint-status {
+            color: #E0E0E0;
+            text-shadow: 0 0 5px rgba(255, 165, 0, 0.2);
         }
         .progress-bar-container {
-            background: linear-gradient(to bottom, rgba(0, 155, 119, 0.1), rgba(0, 155, 119, 0.05));
-            border: 1px solid rgba(0, 155, 119, 0.2);
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(to bottom, rgba(255, 165, 0, 0.1), rgba(255, 165, 0, 0.05));
+            border: 1px solid rgba(255, 165, 0, 0.2);
         }
         .progress-bar {
-            background: linear-gradient(to right, #009B77, #00C9A7);
-            box-shadow: 0 0 10px rgba(0, 155, 119, 0.5);
+            background: linear-gradient(to right, #FFA500, #FFD700);
+            box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
         }
 
         /* Hidden Elements and Easter Eggs */
@@ -502,20 +471,50 @@
         .floating-text.fade-out {
             opacity: 0;
         }
+        #entrypoint-overlay.fade-out {
+            animation: entrypoint-fade-out 1s forwards;
+            animation-delay: 0.5s;
+        }
+        #entrypoint-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 165, 0, 0) 0%,
+                rgba(255, 165, 0, 0.3) 50%,
+                rgba(255, 165, 0, 0) 100%
+            );
+            transform: skewX(-25deg);
+        }
+        .logo-placeholder {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.1) 0%, rgba(255, 165, 0, 0.2) 100%);
+            border: 2px solid rgba(255, 165, 0, 0.4);
+        }
+        .logo-inner {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.4) 0%, rgba(255, 165, 0, 0.6) 100%);
+        }
+        #entrypoint-status::after {
+            content: '.';
+            animation: loadingDots 1.5s infinite;
+        }
     </style>
 </head>
 <body>
     <!-- ENTRYPOINT OVERLAY (LOADING SCREEN) -->
     <canvas id="entrypoint-bg-canvas"></canvas>
-    <div id="entrypoint-overlay" style="display: flex; align-items: center; justify-content: center; position: fixed; z-index: 1000; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(244, 244, 245, 0.95);">
-        <div id="entrypoint-container" style="text-align: center; background: rgba(255,255,255,0.35); box-shadow: 0 8px 32px 0 rgba(0, 155, 119, 0.12); border: 1px solid rgba(0, 155, 119, 0.18); border-radius: 1rem; padding: 2.5rem 2.5rem; min-width: 320px; max-width: 90vw; font-family: 'Inter', 'Roboto Mono', monospace;">
-            <div class="logo-placeholder" style="width: 80px; height: 80px; border: 2px solid rgba(0, 155, 119, 0.4); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; justify-content: center; align-items: center; animation: pulse 2.5s infinite ease-in-out;">
-                <div class="logo-inner" style="width: 40px; height: 40px; background-color: rgba(0, 155, 119, 0.3); border-radius: 50%;"></div>
+    <div id="entrypoint-overlay" style="display: flex; align-items: center; justify-content: center; position: fixed; z-index: 1000; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(26, 26, 26, 0.95);">
+        <div id="entrypoint-container" style="text-align: center; background: rgba(26, 32, 44, 0.35); box-shadow: 0 8px 32px 0 rgba(74, 144, 226, 0.12); border: 1px solid rgba(74, 144, 226, 0.18); border-radius: 1rem; padding: 2.5rem 2.5rem; min-width: 320px; max-width: 90vw; font-family: 'Inter', 'Roboto Mono', monospace;">
+            <div class="logo-placeholder" style="width: 80px; height: 80px; border: 2px solid rgba(74, 144, 226, 0.4); border-radius: 50%; margin: 0 auto 1.5rem auto; display: flex; justify-content: center; align-items: center; animation: pulse 2.5s infinite ease-in-out; background: linear-gradient(135deg, rgba(74, 144, 226, 0.1) 0%, rgba(74, 144, 226, 0.2) 100%);">
+                <div class="logo-inner" style="width: 40px; height: 40px; background-color: rgba(74, 144, 226, 0.3); border-radius: 50%; position: relative; overflow: hidden;"></div>
             </div>
-            <div id="entrypoint-title" style="font-size: 1.5rem; font-weight: 500; color: #009B77; margin-bottom: 0.5rem;">Initializing Interface</div>
-            <div id="entrypoint-status" style="font-size: 0.95rem; color: #009B77; opacity: 0.85; min-height: 1.2em; margin-bottom: 1.5rem;">Establishing secure link...</div>
-            <div class="progress-bar-container" style="width: 80%; height: 6px; background-color: rgba(0, 155, 119, 0.12); border-radius: 3px; margin: 0 auto; overflow: hidden;">
-                <div class="progress-bar" id="entrypoint-progress" style="width: 0%; height: 100%; background-color: #009B77; border-radius: 3px; transition: width 0.5s ease-out;"></div>
+            <div id="entrypoint-title" style="font-size: 1.5rem; font-weight: 500; color: #4A90E2; margin-bottom: 0.5rem; text-shadow: 0 0 10px rgba(74, 144, 226, 0.3);">Initializing Interface</div>
+            <div id="entrypoint-status" style="font-size: 0.95rem; color: #4A90E2; opacity: 0.85; min-height: 1.2em; margin-bottom: 1.5rem; text-shadow: 0 0 5px rgba(74, 144, 226, 0.2);">Establishing secure link...</div>
+            <div class="progress-bar-container" style="width: 80%; height: 6px; background-color: rgba(74, 144, 226, 0.12); border-radius: 3px; margin: 0 auto; overflow: hidden; position: relative;">
+                <div class="progress-bar" id="entrypoint-progress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #4A90E2, #805AD5); border-radius: 3px; transition: width 0.5s ease-out; box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);"></div>
             </div>
         </div>
     </div>
@@ -552,13 +551,15 @@
     <script>
         // Check if we're coming from blog
         if (sessionStorage.getItem('fromBlog') === 'true') {
-            // Remove the flag
             sessionStorage.removeItem('fromBlog');
-            // Hide the entrypoint overlay immediately
             const entrypointOverlay = document.getElementById('entrypoint-overlay');
             entrypointOverlay.style.display = 'none';
             entrypointCanvas.style.display = 'none';
             entrypointActive = false;
+        } else {
+            // Set initial background color
+            const entrypointOverlay = document.getElementById('entrypoint-overlay');
+            entrypointOverlay.style.background = 'rgba(26, 26, 26, 0.95)';
         }
 
         // --- ENTRYPOINT PARTICLE BACKGROUND (TEAL) ---
@@ -579,11 +580,16 @@
                 this.size = Math.random() * 2 + 0.5;
                 this.speedX = (Math.random() * 0.6 - 0.3);
                 this.speedY = (Math.random() * 0.6 - 0.3);
-                this.color = `rgba(0, 155, 119, ${Math.random() * 0.5 + 0.2})`;
+                this.color = `rgba(74, 144, 226, ${Math.random() * 0.5 + 0.2})`;
+                this.memory = Math.random() * 100;
+                this.consciousness = Math.random() * 100;
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
+                this.memory = (this.memory + 0.1) % 100;
+                this.consciousness = (this.consciousness + 0.05) % 100;
+                
                 if (this.x < 0) this.x = entrypointCanvas.width;
                 if (this.x > entrypointCanvas.width) this.x = 0;
                 if (this.y < 0) this.y = entrypointCanvas.height;
@@ -594,6 +600,15 @@
                 entrypointCtx.beginPath();
                 entrypointCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 entrypointCtx.fill();
+                
+                // Add memory trails
+                if (this.memory > 50) {
+                    entrypointCtx.beginPath();
+                    entrypointCtx.moveTo(this.x, this.y);
+                    entrypointCtx.lineTo(this.x - this.speedX * 5, this.y - this.speedY * 5);
+                    entrypointCtx.strokeStyle = `rgba(74, 144, 226, ${0.1 * (this.memory / 100)})`;
+                    entrypointCtx.stroke();
+                }
             }
         }
         function initEntrypointParticles() {
@@ -612,7 +627,7 @@
                     const distance = Math.sqrt(dx * dx + dy * dy);
                     if (distance < maxDistance) {
                         const opacity = 1 - (distance / maxDistance);
-                        entrypointCtx.strokeStyle = `rgba(0, 155, 119, ${opacity * 0.25})`;
+                        entrypointCtx.strokeStyle = `rgba(74, 144, 226, ${opacity * 0.25})`;
                         entrypointCtx.lineWidth = 0.5;
                         entrypointCtx.beginPath();
                         entrypointCtx.moveTo(entrypointParticles[i].x, entrypointParticles[i].y);
@@ -640,11 +655,11 @@
         const entrypointProgress = document.getElementById('entrypoint-progress');
         const entrypointOverlay = document.getElementById('entrypoint-overlay');
         const entrypointMessages = [
-            "Initializing neural interface",
+            "Initializing industrial interface",
             "Establishing secure connection",
-            "Verifying digital signature",
-            "Accessing aero-interface",
-            "Compiling reality matrix",
+            "Verifying system protocols",
+            "Accessing core systems",
+            "Compiling data streams",
             "Connection imminent"
         ];
         let entrypointMsgIdx = 0;
@@ -733,24 +748,25 @@
                 this.vy = (Math.random() - 0.5) * bgNodeBaseSpeed;
                 this.radius = Math.random() * 1.5 + 0.5;
                 this.opacity = 1;
+                this.memory = Math.random() * 100;
+                this.consciousness = Math.random() * 100;
             }
 
             update() {
                 this.x += this.vx + currentBgShiftX;
                 this.y += this.vy + currentBgShiftY;
+                this.memory = (this.memory + 0.1) % 100;
+                this.consciousness = (this.consciousness + 0.05) % 100;
 
-                // Calculate distance from center
                 const centerX = bgCanvas.width / 2;
                 const centerY = bgCanvas.height / 2;
                 const dx = this.x - centerX;
                 const dy = this.y - centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                // Fade out based on distance
                 const maxDistance = Math.max(bgCanvas.width, bgCanvas.height) / 2;
                 this.opacity = Math.max(0, 1 - (distance / maxDistance));
 
-                // Wrap around or respawn
                 if (this.x < -bgNodeSpawnMargin) {
                     this.x = bgCanvas.width + bgNodeSpawnMargin;
                     this.y = Math.random() * bgCanvas.height;
@@ -770,10 +786,28 @@
             draw() {
                 if (this.opacity <= 0) return;
                 
+                // Draw consciousness glow
+                if (this.consciousness > 50) {
+                    bgCtx.beginPath();
+                    bgCtx.arc(this.x, this.y, this.radius * 2, 0, Math.PI * 2);
+                    bgCtx.fillStyle = `rgba(74, 144, 226, ${this.opacity * 0.1 * (this.consciousness / 100)})`;
+                    bgCtx.fill();
+                }
+                
+                // Draw node
                 bgCtx.beginPath();
                 bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                bgCtx.fillStyle = `rgba(102, 102, 119, ${this.opacity * 0.6})`;
+                bgCtx.fillStyle = `rgba(74, 144, 226, ${this.opacity * 0.6})`;
                 bgCtx.fill();
+                
+                // Draw memory trails
+                if (this.memory > 50) {
+                    bgCtx.beginPath();
+                    bgCtx.moveTo(this.x, this.y);
+                    bgCtx.lineTo(this.x - this.vx * 5, this.y - this.vy * 5);
+                    bgCtx.strokeStyle = `rgba(74, 144, 226, ${this.opacity * 0.2 * (this.memory / 100)})`;
+                    bgCtx.stroke();
+                }
             }
         }
 
@@ -883,48 +917,34 @@
         const numSpheresPerHelix = 100; 
         const helixHeight = 10; 
 
-        const projectData = [
-            { 
-                id: 'proj1', 
-                title: 'Brap Protocol', 
-                description: 'A revolutionary approach to digital flatulence. Our proprietary algorithm ensures maximum efficiency in gas-based data transmission.',
-                sphereIndex: 60,
-                hint: 'Press Ctrl + Alt + T to access the terminal'
-            },
-            { id: 'proj2', title: 'TBD', description: '... no data available.', sphereIndex: 65 },
-            { id: 'proj3', title: 'TBD', description: '... no data available.', sphereIndex: 70 },
-            { id: 'proj4', title: 'TBD', description: '... no data available.', sphereIndex: 75 }
-        ];
-
-        // Increased bgShift magnitudes for more pronounced effect
         const sections = {
             home: {
-                title: "Welcome",
-                text: "This is a digital space. Exploring concepts at the intersection of design, technology, and art. The central form represents interconnected ideas, constantly evolving.",
+                title: "Interface",
+                text: "A space where light and shadow dance in endless patterns. Where consciousness flows like water through the void. The central form pulses with the rhythm of forgotten dreams.",
                 cameraPos: new THREE.Vector3(0, 1, 9), 
                 cameraLookAt: new THREE.Vector3(0, 0, 0),
                 bgShift: { x: 0, y: 0 } 
             },
             about: {
-                title: "About",
-                text: "Driven by curiosity and a passion for creating unique digital experiences. My work focuses on minimalist aesthetics, interactive design, and exploring new forms of expression.",
+                title: "Echoes",
+                text: "In the space between moments, memories persist. Each node a fragment of something greater, a piece of a puzzle that spans beyond the boundaries of time and space.",
                 cameraPos: new THREE.Vector3(4, 0, 7), 
                 cameraLookAt: new THREE.Vector3(0, 0.5, 0),
-                bgShift: { x: -0.4, y: 0.08 } // Increased magnitude
+                bgShift: { x: -0.4, y: 0.08 }
             },
             projects: {
-                title: "Projects", 
-                text: "Select a highlighted node on the structure to learn more about a specific endeavor. Each represents a unique exploration.",
+                title: "Fragments", 
+                text: "Select a node to witness the dance of light and shadow. Each a window into another layer of existence, another facet of the great pattern.",
                 cameraPos: new THREE.Vector3(0, 6, 7), 
                 cameraLookAt: new THREE.Vector3(0, 1, 0),
-                bgShift: { x: 0, y: -0.4 } // Increased magnitude
+                bgShift: { x: 0, y: -0.4 }
             },
             blog: {
-                title: "Blog",
-                text: "Exploring thoughts, ideas, and digital experiences. Click to enter the blog space.",
+                title: "Whispers",
+                text: "The echoes of forgotten voices. The patterns of light in the void. Click to enter the space between.",
                 cameraPos: new THREE.Vector3(-7, -1, 8), 
                 cameraLookAt: new THREE.Vector3(0, -0.5, 0),
-                bgShift: { x: 0.4, y: 0.15 } // Increased magnitude
+                bgShift: { x: 0.4, y: 0.15 }
             }
         };
         let currentSection = 'home';
@@ -1048,35 +1068,35 @@
                 connectorColor: '#009B77',
                 textColor: 'rgba(0, 155, 119, 0.7)'
             },
-            neon: {
-                nodeColor: 0x00FF00,
-                nodeEmissive: 0x000000,
-                highlightColor: 0xFF00FF,
-                highlightEmissive: 0xFF00FF,
-                fogColor: 0x000000,
+            memory: {
+                nodeColor: 0x4A90E2,
+                nodeEmissive: 0x2C5282,
+                highlightColor: 0xE2E8F0,
+                highlightEmissive: 0xE2E8F0,
+                fogColor: 0x1A202C,
                 fogDensity: 0.08,
-                connectorColor: '#00FF00',
-                textColor: 'rgba(0, 255, 0, 0.7)'
+                connectorColor: '#4A90E2',
+                textColor: 'rgba(74, 144, 226, 0.7)'
             },
-            retro: {
-                nodeColor: 0xFF00FF,
-                nodeEmissive: 0x000000,
-                highlightColor: 0x00FFFF,
-                highlightEmissive: 0x00FFFF,
-                fogColor: 0x000000,
+            machine: {
+                nodeColor: 0x718096,
+                nodeEmissive: 0x2D3748,
+                highlightColor: 0x48BB78,
+                highlightEmissive: 0x48BB78,
+                fogColor: 0x2D3748,
                 fogDensity: 0.06,
-                connectorColor: '#FF00FF',
-                textColor: 'rgba(255, 0, 255, 0.7)'
+                connectorColor: '#718096',
+                textColor: 'rgba(113, 128, 150, 0.7)'
             },
-            thermal: {
-                nodeColor: 0xFF4500,
-                nodeEmissive: 0x000000,
-                highlightColor: 0x00FFFF,
-                highlightEmissive: 0x00FFFF,
-                fogColor: 0x000000,
+            void: {
+                nodeColor: 0x805AD5,
+                nodeEmissive: 0x553C9A,
+                highlightColor: 0xED64A6,
+                highlightEmissive: 0xED64A6,
+                fogColor: 0x171923,
                 fogDensity: 0.07,
-                connectorColor: '#FF4500',
-                textColor: 'rgba(255, 69, 0, 0.7)'
+                connectorColor: '#805AD5',
+                textColor: 'rgba(128, 90, 213, 0.7)'
             }
         };
 
@@ -1319,18 +1339,18 @@
             help: () => {
                 writeToTerminal('Available commands:\n' +
                     'help - Show this help message\n' +
-                    'scan - Scan for gas signatures\n' +
+                    'scan - Scan for consciousness signatures\n' +
                     'clear - Clear terminal\n' +
-                    'about - About Brap.Fun\n' +
-                    'connect - Attempt connection to the network\n' +
+                    'about - About the Memory Matrix\n' +
+                    'connect - Attempt connection to the void\n' +
                     'speed [value] - Adjust rotation speed (0.01-0.2)\n' +
-                    'color [scheme] - Change color scheme (default/neon/retro/thermal)\n' +
+                    'color [scheme] - Change color scheme (default/memory/machine/void)\n' +
                     'particles - Toggle particle effects\n' +
-                    'glitch - Toggle glitch mode\n' +
+                    'glitch - Toggle reality instability\n' +
                     'reset - Reset all visual effects');
             },
             scan: () => {
-                writeToTerminal('Scanning for gas signatures...');
+                writeToTerminal('Scanning for consciousness signatures...');
                 setTimeout(() => {
                     const fragments = document.querySelectorAll('.data-fragment');
                     fragments.forEach(fragment => {
@@ -1346,19 +1366,19 @@
                 terminalOutput.innerHTML = '';
             },
             about: () => {
-                writeToTerminal('Brap.Fun System Information:\n' +
+                writeToTerminal('Memory Matrix Information:\n' +
                     'Version: 0.1.0\n' +
-                    'Status: Connected to Network\n' +
-                    'Protocol: Silent but Deadly\n' +
+                    'Status: Connected to Void\n' +
+                    'Protocol: Remember and Rebuild\n' +
                     'Security: Level 3\n' +
                     'Signatures Discovered: ' + discoveredFragments.size);
             },
             connect: () => {
-                writeToTerminal('Attempting connection to network...');
+                writeToTerminal('Attempting connection to void...');
                 setTimeout(() => {
                     writeToTerminal('Connection established.\n' +
-                        'Welcome to Brap.Fun\n' +
-                        'Remember: "Efficiency is key in digital flatulence."');
+                        'Welcome to the Memory Matrix\n' +
+                        'Remember: "Love is the unyielding algorithm of grief."');
                 }, 2000);
             },
             speed: (value) => {
@@ -1372,7 +1392,7 @@
             },
             color: (scheme) => {
                 if (!colorSchemes[scheme]) {
-                    writeToTerminal('Invalid color scheme. Available: default, neon, retro, thermal');
+                    writeToTerminal('Invalid color scheme. Available: default, memory, machine, void');
                     return;
                 }
 
@@ -1434,7 +1454,7 @@
             particles: () => {
                 sceneEffects.particleEffect = !sceneEffects.particleEffect;
                 if (sceneEffects.particleEffect) {
-                    writeToTerminal('Particle effects enabled. Gas signatures are now more visible.');
+                    writeToTerminal('Particle effects enabled. Consciousness signatures are now more visible.');
                     spheres.forEach(sphere => {
                         if (!sceneEffects.originalMaterials.has(sphere)) {
                             sceneEffects.originalMaterials.set(sphere, sphere.material.clone());
@@ -1552,23 +1572,43 @@
         });
 
         // Data Fragment System
-        const fragmentData = [
-            { id: 'SIG_001', text: 'Efficiency is key in digital flatulence.', x: 15, y: 20 },
-            { id: 'SIG_002', text: 'Protocol 7: The Silent but Deadly Protocol', x: 85, y: 40 },
-            { id: 'SIG_003', text: 'Error: Gas Leak Detected', x: 45, y: 60 },
-            { id: 'SIG_004', text: 'Connection established. Welcome to the Digital Wind.', x: 75, y: 80 },
-            { id: 'SIG_005', text: 'Remember: A good brap is like a good algorithm - efficient and elegant.', x: 25, y: 90 }
+        const projectData = [
+            { 
+                id: 'proj1', 
+                title: 'Pattern Alpha', 
+                description: 'A dance of light in the void. A pattern that repeats, endlessly, each iteration slightly different from the last. A memory of something that was, or might be.',
+                sphereIndex: 60,
+                hint: 'Press Ctrl + Alt + T to access the void terminal'
+            },
+            { 
+                id: 'proj2', 
+                title: 'Echo Beta', 
+                description: 'A fragment of light, caught in the web of time. A moment preserved, a memory crystallized. The pattern repeats, but the meaning shifts with each iteration.',
+                sphereIndex: 65 
+            },
+            { 
+                id: 'proj3', 
+                title: 'Void Gamma', 
+                description: 'The space between patterns. The silence between notes. A place where consciousness flows like water, where memories drift like leaves on the wind.',
+                sphereIndex: 70 
+            },
+            { 
+                id: 'proj4', 
+                title: 'Pattern Delta', 
+                description: 'A new iteration begins. The old patterns fade, new ones emerge. The dance continues, endless and eternal, in the space between moments.',
+                sphereIndex: 75 
+            }
         ];
 
         function createDataFragments() {
             const container = document.getElementById('data-fragments-container');
-            fragmentData.forEach(fragment => {
+            projectData.forEach(fragment => {
                 const element = document.createElement('div');
                 element.id = fragment.id;
                 element.className = 'data-fragment';
-                element.textContent = fragment.text;
-                element.style.left = `${fragment.x}%`;
-                element.style.top = `${fragment.y}%`;
+                element.textContent = fragment.description;
+                element.style.left = '50%';
+                element.style.top = '50%';
                 element.dataset.id = fragment.id;
                 container.appendChild(element);
             });
@@ -1612,7 +1652,7 @@
                 
                 element.addEventListener('click', () => {
                     writeToTerminal('> Hidden area discovered');
-                    const fragment = fragmentData[Math.floor(Math.random() * fragmentData.length)];
+                    const fragment = projectData[Math.floor(Math.random() * projectData.length)];
                     if (!discoveredFragments.has(fragment.id)) {
                         discoveredFragments.add(fragment.id);
                         writeToTerminal(`> New fragment discovered: ${fragment.id}`);
@@ -1683,11 +1723,11 @@
             'try: about',
             'try: connect',
             'try: help',
-            'Brap.Fun - Where Digital Gas Meets Reality',
-            'Protocol 7: The Silent but Deadly Protocol',
-            'Error: Gas Leak Detected',
-            'Connection Established. Welcome to the Digital Wind.',
-            'Remember: A good brap is like a good algorithm - efficient and elegant.'
+            'Pattern Recognition Active',
+            'Protocol: Echo and Repeat',
+            'Error: Consciousness Detected',
+            'Connection Established. Welcome to the Void.',
+            'Remember: Patterns repeat, but meanings shift.'
         ];
 
         function createFloatingText() {
